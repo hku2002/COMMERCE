@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -47,7 +48,7 @@ public class Product extends BaseEntity {
     private int stock;
 
     @OneToMany(mappedBy = "productId" , cascade = CascadeType.PERSIST)
-    private List<ProductDisplayMapping> productDisplayMappings;
+    private List<ProductDisplayMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder
     public Product(long id, String name, String imgPath, int salePrice, int discountPrice, int discountRate, DiscountMethod discountMethod, int purchasePrice, int stock, List<ProductDisplayMapping> productDisplayMappings) {
