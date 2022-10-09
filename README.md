@@ -56,6 +56,8 @@
   - 주문목록 조회(배송상태 포함)
   - 주문상세 조회(배송상세 포함)
 
+---
+
 ### ERD
 
 ![COMMERCE_ERD](https://user-images.githubusercontent.com/20279725/194756645-00bbe869-4a1a-4562-8ae7-c069e9b84029.PNG)
