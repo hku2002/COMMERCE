@@ -1,4 +1,4 @@
-# Shop back-end
+# COMMERCE back-end
 
 ## Description
 일반적인 커머스의 백엔드 Application의 샘플을 제공합니다.
