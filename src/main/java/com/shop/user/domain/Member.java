@@ -1,5 +1,6 @@
 package com.shop.user.domain;
 
+import com.shop.global.common.Address;
 import com.shop.global.common.BaseEntity;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,17 +35,11 @@ public class Member extends BaseEntity {
     @Column(name = "phone", nullable = false, length = 11)
     private String phoneNumber;
 
-    @Column(name = "address", length = 100)
-    private String address;
-
-    @Column(name = "address_detail", length = 100)
-    private String addressDetail;
-
-    @Column(name = "zip_code", length = 5)
-    private String zipCode;
+    @Embedded
+    private Address address;
 
     @Builder
-    public Member(long id, String userId, String password, String username, String email, String phoneNumber, String address, String addressDetail, String zipCode) {
+    public Member (long id, String userId, String password, String username, String email, String phoneNumber, Address address) {
         this.id = id;
         this.userId = userId;
         this.password = password;
@@ -52,8 +47,6 @@ public class Member extends BaseEntity {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.addressDetail = addressDetail;
-        this.zipCode = zipCode;
     }
 
 }

@@ -29,15 +29,19 @@ public class ProductDisplayMapping {
     @JoinColumn(name = "display_id", updatable = false)
     private Display displayId;
 
+    @Column(name = "used_stock", nullable = false, columnDefinition = "int default 1")
+    private int usedStock;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public ProductDisplayMapping (Long id, Product productId, Display displayId) {
+    public ProductDisplayMapping (Long id, Product productId, Display displayId, int usedStock) {
         this.id = id;
         this.productId = productId;
         this.displayId = displayId;
+        this.usedStock = usedStock;
         this.createdAt = LocalDateTime.now();
     }
 }

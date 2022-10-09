@@ -1,5 +1,6 @@
 package com.shop.delivery.domain;
 
+import com.shop.global.common.Address;
 import com.shop.global.common.BaseEntity;
 import com.shop.global.common.IEnumType;
 import com.shop.user.domain.Member;
@@ -24,14 +25,14 @@ public class Delivery extends BaseEntity {
     @JoinColumn(name = "member_id", referencedColumnName = "id", updatable = false)
     private Member member;
 
-    @Column(name = "address", length = 100, nullable = false)
-    private String address;
+    @Embedded
+    private Address address;
 
-    @Column(name = "address_detail", length = 100)
-    private String addressDetail;
-
-    @Column(name = "zip_code", length = 5, nullable = false)
-    private String zipCode;
+    public Delivery (Long id, Member member, Address address) {
+        this.id = id;
+        this.member = member;
+        this.address = address;
+    }
 
     public enum DeliveryStatus implements IEnumType {
         WAIT        ("WAIT"),

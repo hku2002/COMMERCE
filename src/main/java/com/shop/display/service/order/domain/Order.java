@@ -25,6 +25,7 @@ public class Order {
     @JoinColumn(name = "member_id", referencedColumnName = "id", updatable = false)
     private Member member;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 10)
     private OrderStatus status;
 
@@ -32,19 +33,19 @@ public class Order {
     private int totalPrice;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime orderDateTime;
 
     @Builder
-    public Order(Long id, Member member, int totalPrice) {
+    public Order (Long id, Member member, int totalPrice) {
         this.id = id;
         this.member = member;
         this.status = OrderStatus.COMPLETED;
         this.totalPrice = totalPrice;
-        this.createdAt = LocalDateTime.now();
+        this.orderDateTime = LocalDateTime.now();
     }
 
     public enum OrderStatus implements IEnumType {
-        COMPLETED    ("COMPLETED"),
+        COMPLETED   ("COMPLETED"),
         CANCELED    ("CANCELED");
 
         private final String value;

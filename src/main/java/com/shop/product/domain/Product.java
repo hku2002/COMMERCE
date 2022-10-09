@@ -51,7 +51,7 @@ public class Product extends BaseEntity {
     private List<ProductDisplayMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder
-    public Product(long id, String name, String imgPath, int salePrice, int discountPrice, int discountRate, DiscountMethod discountMethod, int purchasePrice, int stock, List<ProductDisplayMapping> productDisplayMappings) {
+    public Product (long id, String name, String imgPath, int salePrice, int discountPrice, int discountRate, DiscountMethod discountMethod, int purchasePrice, int stock, List<ProductDisplayMapping> productDisplayMappings) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;

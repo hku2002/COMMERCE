@@ -43,6 +43,7 @@ public class Display extends BaseEntity {
     @Column(name = "discount_method", length = 10)
     private Product.DiscountMethod discountMethod;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private DisplayStatus status;
 
@@ -50,7 +51,7 @@ public class Display extends BaseEntity {
     private List<ProductDisplayMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder
-    public Display(long id, String name, String imgPath, int price, int discountPrice, int discountRate, Product.DiscountMethod discountMethod, DisplayStatus status, List<ProductDisplayMapping> productDisplayMappings) {
+    public Display (long id, String name, String imgPath, int price, int discountPrice, int discountRate, Product.DiscountMethod discountMethod, DisplayStatus status, List<ProductDisplayMapping> productDisplayMappings) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;
