@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
+
 import static javax.persistence.GenerationType.AUTO;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -41,7 +43,7 @@ public class Member extends BaseEntity {
     private Address address;
 
     @Builder
-    public Member (long id, String userId, String password, String username, String email, String phoneNumber, Address address) {
+    public Member (long id, String userId, String password, String username, String email, String phoneNumber, Address address, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
         this.password = password;
@@ -49,6 +51,9 @@ public class Member extends BaseEntity {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
+        this.active = active;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
 }

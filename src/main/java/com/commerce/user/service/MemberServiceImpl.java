@@ -21,16 +21,19 @@ public class MemberServiceImpl {
     @Transactional
     public Long join(Member member) {
         validateDuplicateMember(member);
-        memberRepository.save(member);
-        return member.getId();
+        return memberRepository.save(member).getId();
     }
 
     /**
      * 회원 조회
      * param userId
      */
-    public Member findOne(Long userId) {
-        return memberRepository.findById(userId).orElseThrow(() -> new IllegalStateException("존재하지 않는 회원입니다."));
+    public Member findOne(String userId) {
+        Member member = memberRepository.findByUserId(userId);
+        if (member == null) {
+            throw new IllegalStateException("존재하지 않는 회원입니다.");
+        }
+        return member;
     }
 
     /**
