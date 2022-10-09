@@ -1,0 +1,64 @@
+package com.shop.display.service.order.domain;
+
+import com.shop.global.common.IEnumType;
+import com.shop.user.domain.Member;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+@Getter
+@Entity
+@Table(name = "ORDERS")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", insertable = false, updatable = false)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", referencedColumnName = "id", updatable = false)
+    private Member member;
+
+    @Column(name = "status", nullable = false, length = 10)
+    private OrderStatus status;
+
+    @Column(name = "total_price", nullable = false)
+    private int totalPrice;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Builder
+    public Order(Long id, Member member, int totalPrice) {
+        this.id = id;
+        this.member = member;
+        this.status = OrderStatus.COMPLETED;
+        this.totalPrice = totalPrice;
+        this.createdAt = LocalDateTime.now();
+    }
+
+    public enum OrderStatus implements IEnumType {
+        COMPLETED    ("COMPLETED"),
+        CANCELED    ("CANCELED");
+
+        private final String value;
+        OrderStatus(String value) { this.value = value; }
+
+        @Override
+        public String getCode() {
+            return name();
+        }
+
+        @Override
+        public String getName() {
+            return value;
+        }
+    }
+
+}

@@ -16,7 +16,7 @@ public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
     @Column(name = "user_id", nullable = false, unique = true, length = 50)
