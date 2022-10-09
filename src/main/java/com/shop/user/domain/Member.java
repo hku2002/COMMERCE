@@ -44,7 +44,8 @@ public class Member extends BaseEntity {
     private String zipCode;
 
     @Builder
-    public Member(String userId, String password, String username, String email, String phoneNumber, String address, String addressDetail, String zipCode) {
+    public Member(long id, String userId, String password, String username, String email, String phoneNumber, String address, String addressDetail, String zipCode) {
+        this.id = id;
         this.userId = userId;
         this.password = password;
         this.username = username;
