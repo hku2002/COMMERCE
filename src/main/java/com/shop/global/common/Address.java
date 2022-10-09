@@ -1,5 +1,6 @@
 package com.shop.global.common;
 
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.Column;
@@ -17,5 +18,14 @@ public class Address {
 
     @Column(name = "zip_code", length = 5)
     private String zipCode;
+
+    protected Address() {}
+
+    @Builder
+    public Address(String address, String addressDetail, String zipCode) {
+        this.address = address;
+        this.addressDetail = addressDetail;
+        this.zipCode = zipCode;
+    }
 
 }

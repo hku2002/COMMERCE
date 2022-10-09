@@ -4,20 +4,22 @@ import com.shop.global.common.Address;
 import com.shop.global.common.BaseEntity;
 import com.shop.global.common.IEnumType;
 import com.shop.user.domain.Member;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import static javax.persistence.GenerationType.AUTO;
+import static lombok.AccessLevel.PROTECTED;
+
 @Getter
 @Entity
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 @Table(name = "DELIVERY")
 public class Delivery extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = AUTO)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
@@ -28,6 +30,9 @@ public class Delivery extends BaseEntity {
     @Embedded
     private Address address;
 
+    @Column(name = "status", nullable = false, length = 30)
+    private DeliveryStatus status;
+
     public Delivery (Long id, Member member, Address address) {
         this.id = id;
         this.member = member;
@@ -35,7 +40,7 @@ public class Delivery extends BaseEntity {
     }
 
     public enum DeliveryStatus implements IEnumType {
-        WAIT        ("WAIT"),
+        STAND_BY    ("STAND_BY"),
         IN_DELIVERY ("IN_DELIVERY"),
         DELIVERED   ("DELIVERED"),
         CANCELED    ("CANCELED");

@@ -2,7 +2,6 @@ package com.shop.product.domain;
 
 import com.shop.global.common.BaseEntity;
 import com.shop.global.common.IEnumType;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,14 +10,19 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.GenerationType.AUTO;
+import static lombok.AccessLevel.PROTECTED;
+
 @Getter
 @Entity
 @Table(name = "PRODUCT")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 public class Product extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = AUTO)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
@@ -37,8 +41,8 @@ public class Product extends BaseEntity {
     @Column(name = "discount_rate", nullable = false, columnDefinition = "int default 0")
     private int discountRate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "discount_method", nullable = false, length = 10, columnDefinition = "varchar(10) default 'NO_DISCOUNT'")
+    @Enumerated(STRING)
+    @Column(name = "discount_method", nullable = false, length = 30, columnDefinition = "varchar(10) default 'NO_DISCOUNT'")
     private DiscountMethod discountMethod;
 
     @Column(name = "purchase_price", nullable = false)
@@ -47,7 +51,7 @@ public class Product extends BaseEntity {
     @Column(name = "stock", nullable = false)
     private int stock;
 
-    @OneToMany(mappedBy = "productId" , cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "productId" , cascade = PERSIST)
     private List<ProductDisplayMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder

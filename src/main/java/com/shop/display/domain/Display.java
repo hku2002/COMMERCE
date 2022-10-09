@@ -2,9 +2,7 @@ package com.shop.display.domain;
 
 import com.shop.global.common.BaseEntity;
 import com.shop.global.common.IEnumType;
-import com.shop.product.domain.Product;
 import com.shop.product.domain.ProductDisplayMapping;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,14 +11,20 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.shop.product.domain.Product.DiscountMethod;
+import static javax.persistence.CascadeType.PERSIST;
+import static javax.persistence.EnumType.STRING;
+import static javax.persistence.GenerationType.AUTO;
+import static lombok.AccessLevel.PROTECTED;
+
 @Getter
 @Entity
 @Table(name = "DISPLAY")
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
 public class Display extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = AUTO)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
@@ -33,25 +37,29 @@ public class Display extends BaseEntity {
     @Column(name = "price", nullable = false)
     private int price;
 
-    @Column(name = "discount_price", nullable = false, columnDefinition = "int default 0")
+    @Column(name = "discount_price", nullable = false)
     private int discountPrice;
 
-    @Column(name = "discount_rate", nullable = false, columnDefinition = "int default 0")
+    @Column(name = "discount_rate", nullable = false)
     private int discountRate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "discount_method", length = 10)
-    private Product.DiscountMethod discountMethod;
+    @Enumerated(STRING)
+    @Column(name = "discount_method", length = 30)
+    private DiscountMethod discountMethod;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(STRING)
     @Column(name = "status", nullable = false)
     private DisplayStatus status;
 
-    @OneToMany(mappedBy = "productId" , cascade = CascadeType.PERSIST)
+    @Enumerated(STRING)
+    @Column(name = "composition_type", nullable = false, length = 30)
+    private CompositionType compositionType;
+
+    @OneToMany(mappedBy = "productId" , cascade = PERSIST)
     private List<ProductDisplayMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder
-    public Display (long id, String name, String imgPath, int price, int discountPrice, int discountRate, Product.DiscountMethod discountMethod, DisplayStatus status, List<ProductDisplayMapping> productDisplayMappings) {
+    public Display (long id, String name, String imgPath, int price, int discountPrice, int discountRate, DiscountMethod discountMethod, DisplayStatus status, CompositionType compositionType, List<ProductDisplayMapping> productDisplayMappings) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;
@@ -60,17 +68,37 @@ public class Display extends BaseEntity {
         this.discountRate = discountRate;
         this.discountMethod = discountMethod;
         this.status = status;
+        this.compositionType = compositionType;
         this.productDisplayMappings = productDisplayMappings;
     }
 
     public enum DisplayStatus implements IEnumType {
-        WAIT        ("WAIT"),
+        STAND_BY    ("STAND_BY"),
         DISPLAY     ("DISPLAY"),
         SOLD_OUT    ("SOLD_OUT"),
         END         ("END");
 
         private final String value;
         DisplayStatus(String value) { this.value = value; }
+
+        @Override
+        public String getCode() {
+            return name();
+        }
+
+        @Override
+        public String getName() {
+            return value;
+        }
+    }
+
+    public enum CompositionType implements IEnumType {
+        SINGLE         ("SINGLE"),
+        VARIETY_SET    ("VARIETY_SET"),
+        PACKAGE        ("PACKAGE");
+
+        private final String value;
+        CompositionType(String value) { this.value = value; }
 
         @Override
         public String getCode() {
