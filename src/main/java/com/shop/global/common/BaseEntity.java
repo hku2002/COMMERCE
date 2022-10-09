@@ -14,11 +14,11 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @Column(name = "active", columnDefinition = "tinyint default 1")
+    @Column(name = "active", nullable = false)
     protected boolean active = true;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false)
+    @Column(name = "created_at", updatable = false, nullable = false)
     protected LocalDateTime createdAt;
 
     @CreatedDate

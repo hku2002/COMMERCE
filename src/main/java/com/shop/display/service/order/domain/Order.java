@@ -29,7 +29,7 @@ public class Order {
     private Member member;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, length = 10)
+    @Column(name = "status", nullable = false, length = 30)
     private OrderStatus status;
 
     @Column(name = "total_price", nullable = false)

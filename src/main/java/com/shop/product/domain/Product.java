@@ -35,27 +35,27 @@ public class Product extends BaseEntity {
     @Column(name = "sale_price", nullable = false)
     private int salePrice;
 
-    @Column(name = "discount_price", nullable = false, columnDefinition = "int default 0")
+    @Column(name = "discount_price", nullable = false)
     private int discountPrice;
 
-    @Column(name = "discount_rate", nullable = false, columnDefinition = "int default 0")
+    @Column(name = "discount_rate", nullable = false)
     private int discountRate;
 
     @Enumerated(STRING)
-    @Column(name = "discount_method", nullable = false, length = 30, columnDefinition = "varchar(10) default 'NO_DISCOUNT'")
+    @Column(name = "discount_method", nullable = false, length = 30)
     private DiscountMethod discountMethod;
 
     @Column(name = "purchase_price", nullable = false)
     private int purchasePrice;
 
-    @Column(name = "stock", nullable = false)
-    private int stock;
+    @Column(name = "quantity", nullable = false)
+    private int quantity;
 
     @OneToMany(mappedBy = "productId" , cascade = PERSIST)
     private List<ProductDisplayMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder
-    public Product (long id, String name, String imgPath, int salePrice, int discountPrice, int discountRate, DiscountMethod discountMethod, int purchasePrice, int stock, List<ProductDisplayMapping> productDisplayMappings) {
+    public Product (long id, String name, String imgPath, int salePrice, int discountPrice, int discountRate, DiscountMethod discountMethod, int purchasePrice, int quantity, List<ProductDisplayMapping> productDisplayMappings) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;
@@ -64,7 +64,7 @@ public class Product extends BaseEntity {
         this.discountRate = discountRate;
         this.discountMethod = discountMethod;
         this.purchasePrice = purchasePrice;
-        this.stock = stock;
+        this.quantity = quantity;
         this.productDisplayMappings = productDisplayMappings;
     }
 

@@ -33,10 +33,11 @@ public class Delivery extends BaseEntity {
     @Column(name = "status", nullable = false, length = 30)
     private DeliveryStatus status;
 
-    public Delivery (Long id, Member member, Address address) {
+    public Delivery (Long id, Member member, Address address, DeliveryStatus status) {
         this.id = id;
         this.member = member;
         this.address = address;
+        this.status = status;
     }
 
     public enum DeliveryStatus implements IEnumType {
