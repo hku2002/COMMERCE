@@ -1,4 +1,4 @@
-package com.shop.display.service.order.domain;
+package com.shop.order.domain;
 
 import com.shop.global.common.IEnumType;
 import com.shop.user.domain.Member;

@@ -1,4 +1,4 @@
-package com.shop.display.service.order.domain;
+package com.shop.order.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.shop.display.domain.Display;
