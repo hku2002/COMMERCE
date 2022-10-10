@@ -5,6 +5,7 @@ import com.commerce.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 
 @Service
@@ -30,9 +31,10 @@ public class MemberServiceImpl {
      */
     public Member findOne(String userId) {
         Member member = memberRepository.findByUserId(userId);
-        if (member == null) {
+        if (ObjectUtils.isEmpty(member)) {
             throw new IllegalStateException("존재하지 않는 회원입니다.");
         }
+
         return member;
     }
 
@@ -41,7 +43,7 @@ public class MemberServiceImpl {
      * param member
      */
     private void validateDuplicateMember(Member member) {
-        if (memberRepository.findByUserId(member.getUserId()) != null) {
+        if (!ObjectUtils.isEmpty(memberRepository.findByUserId(member.getUserId()))) {
             throw new IllegalStateException("이미 존재하는 회원입니다.");
         }
     }
