@@ -55,11 +55,17 @@ public class Display extends BaseEntity {
     @Column(name = "composition_type", nullable = false, length = 30)
     private CompositionType compositionType;
 
-    @OneToMany(mappedBy = "productId" , cascade = PERSIST)
+    @Column(name = "display_code", nullable = false, length = 30)
+    private String displayCode;
+
+    @Column(name = "main_product_id", nullable = false)
+    private Long mainProductId;
+
+    @OneToMany(mappedBy = "displayId" , cascade = PERSIST)
     private List<ProductDisplayMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder
-    public Display (long id, String name, String imgPath, int price, int discountPrice, int discountRate, DiscountMethod discountMethod, DisplayStatus status, CompositionType compositionType, List<ProductDisplayMapping> productDisplayMappings) {
+    public Display (long id, String name, String imgPath, int price, int discountPrice, int discountRate, DiscountMethod discountMethod, DisplayStatus status, CompositionType compositionType, String displayCode, Long mainProductId, List<ProductDisplayMapping> productDisplayMappings) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;
@@ -69,6 +75,8 @@ public class Display extends BaseEntity {
         this.discountMethod = discountMethod;
         this.status = status;
         this.compositionType = compositionType;
+        this.displayCode = displayCode;
+        this.mainProductId = mainProductId;
         this.productDisplayMappings = productDisplayMappings;
     }
 
