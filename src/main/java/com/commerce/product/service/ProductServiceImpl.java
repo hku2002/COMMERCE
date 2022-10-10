@@ -9,26 +9,17 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ProductServiceImpl {
 
     private final ProductRepository productRepository;
 
     /**
-     * 상품 상세 조회
-     * param displayId
+     * 전시 목록 조회
+     * param
      */
-    public Product detail(Long displayId) {
+    public List<Product> findByDisplayCode(String displayCode) {
         return null;
     }
-
-    /**
-     * 상품 옵션 목록
-     * param displayId, mainProductId
-     */
-    public List<Product> optionList(Long displayId) {
-        return null;
-    }
-
 }

@@ -1,7 +1,8 @@
 package com.commerce.order.domain;
 
+import com.commerce.global.common.Price;
+import com.commerce.product.domain.Product;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.commerce.display.domain.Display;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,18 +32,38 @@ public class OrderDetail {
 
     @OneToOne(fetch = LAZY)
     @JoinColumn(name = "display_id", referencedColumnName = "id", updatable = false)
-    private Display display;
+    private Product product;
+
+    @Embedded
+    private Price price;
+
+    @Column(name = "supply_price", nullable = false)
+    private int supplyPrice;
+
+    @Column(name = "user_purchase_quantity", nullable = false)
+    private int userPurchaseQuantity;
+
+    @Column(name = "item_used_quantity", nullable = false)
+    private int itemUsedQuantity;
+
+    @Column(name = "activated", nullable = false)
+    private boolean activated;
 
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public OrderDetail (Long id, Order order, Display display) {
+    public OrderDetail(long id, Order order, Product product, Price price, int supplyPrice, int userPurchaseQuantity, int itemUsedQuantity, boolean activated, LocalDateTime createdAt) {
         this.id = id;
         this.order = order;
-        this.display = display;
-        this.createdAt = LocalDateTime.now();
+        this.product = product;
+        this.price = price;
+        this.supplyPrice = supplyPrice;
+        this.userPurchaseQuantity = userPurchaseQuantity;
+        this.itemUsedQuantity = itemUsedQuantity;
+        this.activated = activated;
+        this.createdAt = createdAt;
     }
 
 }

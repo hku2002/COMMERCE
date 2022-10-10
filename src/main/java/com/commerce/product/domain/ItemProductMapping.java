@@ -1,7 +1,7 @@
 package com.commerce.product.domain;
 
+import com.commerce.user.constants.Item;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.commerce.display.domain.Display;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Table(name = "PRODUCT_DISPLAY_MAPPING")
 @NoArgsConstructor(access = PROTECTED)
-public class ProductDisplayMapping {
+public class ItemProductMapping {
 
     @Id
     @GeneratedValue(strategy = AUTO)
@@ -26,26 +26,26 @@ public class ProductDisplayMapping {
     private Long id;
 
     @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "item_id", updatable = false)
+    private Item itemId;
+
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id", updatable = false)
     private Product productId;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "display_id", updatable = false)
-    private Display displayId;
-
-    @Column(name = "used_quantity", nullable = false)
-    private int usedQuantity;
+    @Column(name = "used_stock_quantity", nullable = false)
+    private int usedStockQuantity;
 
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public ProductDisplayMapping (Long id, Product productId, Display displayId, int usedQuantity) {
+    public ItemProductMapping(Long id, Item itemId, Product productId, int usedQuantity) {
         this.id = id;
+        this.itemId = itemId;
         this.productId = productId;
-        this.displayId = displayId;
-        this.usedQuantity = usedQuantity;
+        this.usedStockQuantity = usedQuantity;
         this.createdAt = LocalDateTime.now();
     }
 }

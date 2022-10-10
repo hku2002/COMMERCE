@@ -2,6 +2,7 @@ package com.commerce.order.domain;
 
 import com.commerce.global.common.IEnumType;
 import com.commerce.user.domain.Member;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 import static lombok.AccessLevel.PROTECTED;
@@ -35,6 +37,7 @@ public class Order {
     @Column(name = "total_price", nullable = false)
     private int totalPrice;
 
+    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime orderDateTime;
 

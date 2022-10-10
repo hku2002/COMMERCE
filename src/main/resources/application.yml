@@ -13,7 +13,7 @@ spring:
   jpa:
     database: h2
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true

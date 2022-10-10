@@ -51,7 +51,7 @@ public class Member extends BaseEntity {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.address = address;
-        this.active = active;
+        this.activated = activated;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

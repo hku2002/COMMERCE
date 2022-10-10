@@ -14,8 +14,8 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
 
-    @Column(name = "active", nullable = false)
-    protected boolean active = true;
+    @Column(name = "activated", nullable = false)
+    protected boolean activated = true;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
