@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -16,10 +14,10 @@ public class ProductServiceImpl {
     private final ProductRepository productRepository;
 
     /**
-     * 전시 목록 조회
-     * param
+     * 상품 상세 조회
+     * param id
      */
-    public List<Product> findByDisplayCode(String displayCode) {
-        return null;
+    public Product detail(Long id) {
+        return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다."));
     }
 }

@@ -16,14 +16,6 @@ public class ItemServiceImpl {
     private final ItemRepository itemRepository;
 
     /**
-     * 상품 상세 조회
-     * param displayId
-     */
-    public Item detail(Long displayId) {
-        return null;
-    }
-
-    /**
      * 상품 옵션 목록
      * param displayId, mainProductId
      */
