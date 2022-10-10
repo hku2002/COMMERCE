@@ -1,11 +1,11 @@
 package com.commerce.order.domain;
 
+import com.commerce.product.domain.Option;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
@@ -23,11 +23,13 @@ public class OptionCartMapping {
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
-    @Column(name = "option_id", nullable = false)
-    private Long optionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "option_id")
+    private Option optionId;
 
-    @Column(name = "cart_id", nullable = false)
-    private Long cartId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cart_id")
+    private Cart cart;
 
     @Column(name = "activated", nullable = false)
     private boolean activated;

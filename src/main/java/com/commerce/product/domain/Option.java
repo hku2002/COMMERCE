@@ -1,11 +1,13 @@
 package com.commerce.product.domain;
 
 import com.commerce.global.common.BaseEntity;
+import com.commerce.order.domain.OptionCartMapping;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 
 import static javax.persistence.GenerationType.AUTO;
 import static lombok.AccessLevel.PROTECTED;
@@ -20,6 +22,9 @@ public class Option extends BaseEntity {
     @GeneratedValue(strategy = AUTO)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
+
+    @OneToMany(mappedBy = "id", cascade = CascadeType.PERSIST)
+    private List<OptionCartMapping> optionCartMappings;
 
     @Column(name = "product_id", nullable = false)
     private Long productId;
@@ -40,8 +45,9 @@ public class Option extends BaseEntity {
     private Long parentId;
 
     @Builder
-    public Option(Long id, Long productId, Long itemId, Long itemProductMappingId, String name, int stage, Long parentId) {
+    public Option(Long id, List<OptionCartMapping> optionCartMappings, Long productId, Long itemId, Long itemProductMappingId, String name, int stage, Long parentId) {
         this.id = id;
+        this.optionCartMappings = optionCartMappings;
         this.productId = productId;
         this.itemId = itemId;
         this.itemProductMappingId = itemProductMappingId;
