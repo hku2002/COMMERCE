@@ -2,6 +2,7 @@ package com.commerce.product.domain;
 
 import com.commerce.user.constants.Item;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,10 +26,12 @@ public class ItemProductMapping {
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id", updatable = false)
     private Item itemId;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id", updatable = false)
     private Product productId;
