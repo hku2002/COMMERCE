@@ -24,7 +24,7 @@ public class ProductServiceImpl {
 
     /**
      * 상품 목록 조회
-     * param : displayStatus
+     * param : productsRequestDto
      */
     public List<ProductResponseDto> findProducts(ProductsRequestDto productsRequestDto) {
         List<Product> products = productRepository.findProductsByActivatedAndStatusIn(true
