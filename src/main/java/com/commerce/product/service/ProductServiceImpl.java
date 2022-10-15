@@ -26,7 +26,7 @@ public class ProductServiceImpl {
      * param : displayStatus
      */
     public List<ProductResponseDto> findProducts() {
-        List<Product> products = productRepository.findProductsByStatusIn(List.of(DISPLAY, OUT_OF_STOCK), PageRequest.of(0, 10));
+        List<Product> products = productRepository.findProductsByActivatedAndStatusIn(true, List.of(DISPLAY, OUT_OF_STOCK), PageRequest.of(0, 10));
         return products.stream().map(ProductResponseDto::new).collect(Collectors.toList());
     }
 
