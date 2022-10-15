@@ -34,7 +34,7 @@ public class ProductServiceImpl {
      * 상품 상세 조회
      * param id
      */
-    public Product detail(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다."));
+    public ProductResponseDto findProduct(Long id) {
+        return new ProductResponseDto(productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다.")));
     }
 }
