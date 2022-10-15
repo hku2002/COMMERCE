@@ -2,6 +2,7 @@ package com.commerce.product.service;
 
 import com.commerce.product.domain.Product;
 import com.commerce.product.dto.ProductResponseDto;
+import com.commerce.product.dto.ProductsRequestDto;
 import com.commerce.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -25,8 +26,10 @@ public class ProductServiceImpl {
      * 상품 목록 조회
      * param : displayStatus
      */
-    public List<ProductResponseDto> findProducts() {
-        List<Product> products = productRepository.findProductsByActivatedAndStatusIn(true, List.of(DISPLAY, OUT_OF_STOCK), PageRequest.of(0, 10));
+    public List<ProductResponseDto> findProducts(ProductsRequestDto productsRequestDto) {
+        List<Product> products = productRepository.findProductsByActivatedAndStatusIn(true
+                , List.of(DISPLAY, OUT_OF_STOCK)
+                , PageRequest.of(productsRequestDto.getLimit(), productsRequestDto.getOffset()));
         return products.stream().map(ProductResponseDto::new).collect(Collectors.toList());
     }
 
@@ -35,6 +38,7 @@ public class ProductServiceImpl {
      * param id
      */
     public ProductResponseDto findProduct(Long id) {
-        return new ProductResponseDto(productRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다.")));
+        return new ProductResponseDto(productRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다.")));
     }
 }
