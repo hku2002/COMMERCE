@@ -21,5 +21,5 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("select c from Cart c where c.id = :id and c.member.id = :memberId and c.activated = true")
     Cart findByIdAndMemberId(Long id, Long memberId);
 
-    Cart findTop1ByItemIdAndProductIdAndActivated(Long itemId, Long productId, boolean activated);
+    Cart findTop1ByItemIdAndProductIdAndOptionIdAndActivated(Long itemId, Long productId, Long optionId, boolean activated);
 }

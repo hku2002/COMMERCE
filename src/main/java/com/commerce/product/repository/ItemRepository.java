@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    Item findTop1ByIdAndActivated(Long itemId, boolean activated);
+    Item findByIdAndActivated(Long itemId, boolean activated);
 }

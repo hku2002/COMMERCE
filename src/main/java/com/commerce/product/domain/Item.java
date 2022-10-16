@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -38,18 +40,18 @@ public class Item extends BaseEntity {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
 
-    @OneToOne(mappedBy = "item", cascade = PERSIST)
-    private ItemProductMapping productProductMapping;
+    @OneToMany(mappedBy = "item", cascade = PERSIST)
+    private List<ItemProductMapping> productProductMappings = new ArrayList<>();
 
     @Builder
-    public Item(long id, String name, String imgPath, Price price, int supplyPrice, int stockQuantity, ItemProductMapping productProductMapping) {
+    public Item(long id, String name, String imgPath, Price price, int supplyPrice, int stockQuantity, List<ItemProductMapping> productProductMappings) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;
         this.price = price;
         this.supplyPrice = supplyPrice;
         this.stockQuantity = stockQuantity;
-        this.productProductMapping = productProductMapping;
+        this.productProductMappings = productProductMappings;
     }
 
 }

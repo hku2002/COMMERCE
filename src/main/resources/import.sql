@@ -8,23 +8,30 @@ insert into item (id, name, img_path, default_price, sale_price, discount_price,
 insert into item (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, supply_price, stock_quantity, activated, created_at) values (4, '이쁜 티셔트 L 노랑티', 'https://img.test.com/tsyellow.jpg', 10000, 9000, 0, 10, 'RATE', 2000, 100, true, now());
 insert into item (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, supply_price, stock_quantity, activated, created_at) values (5, '이쁜 티셔트 M 파랑티', 'https://img.test.com/tsybluem.jpg', 10000, 8000, 0, 20, 'RATE', 2000, 100, true, now());
 insert into item (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, supply_price, stock_quantity, activated, created_at) values (6, '이쁜 티셔트 M 노랑티', 'https://img.test.com/tsyyellowm.jpg', 10000, 8000, 0, 20, 'RATE', 2000, 100, true, now());
+insert into item (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, supply_price, stock_quantity, activated, created_at) values (7, '맛난 김밥', 'https://img.test.com/kimboop.jpg', 3000, 0, 0, 0, 'NO_DISCOUNT', 2000, 50, true, now());
 
 insert into product (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, status, composition_type, main_item_id, activated, created_at)  values (1, '이쁜 텀블러', 'https://img.test.com/item.jpg', 10000, 8000, 2000, 0, 'PRICE', 'DISPLAY', 'SINGLE', 1, true, now());
-insert into product (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, status, composition_type, main_item_id, activated, created_at)  values (2, '이쁜 티셔트', 'https://img.test.com/item.jpg', 10000, 8000, 0, 20, 'RATE', 'DISPLAY', 'SINGLE', 1, true, now());
+insert into product (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, status, composition_type, main_item_id, activated, created_at)  values (2, '이쁜 티셔트', 'https://img.test.com/item.jpg', 10000, 8000, 0, 20, 'RATE', 'DISPLAY', 'SINGLE', 5, true, now());
+insert into product (id, name, img_path, default_price, sale_price, discount_price, discount_rate, discount_method, status, composition_type, main_item_id, activated, created_at)  values (3, '맛난 김밥 세트', 'https://img.test.com/kimboop.jpg', 3000, 3000, 0, 0, 'NO_DISCOUNT', 'DISPLAY', 'VARIETY_SET', 7, true, now());
 
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (1, 1, 1, 1, '파랑', 1, null, true, now());
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (2, 1, 2, 1, '노랑', 1, null, true, now());
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (3, 2, 3, 1, 'L', 1, null, true, now());
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (4, 2, 3, 1, '파랑티', 2, 3, true, now());
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (5, 2, 4, 1, '노랑티', 2, 4, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (1, 1, 1, 1, '파랑', 1, null, 1, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (2, 1, 2, 1, '노랑', 1, null, 1, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (3, 2, 3, 1, 'L', 1, null, 1, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (4, 2, 3, 1, '파랑티', 2, 3, 1, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (5, 2, 4, 1, '노랑티', 2, 4, 1, true, now());
 
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (6, 2, 5, 1, 'M', 1, null, true, now());
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (7, 2, 5, 1, '파랑티', 2, 5, true, now());
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, activated, created_at) values (8, 2, 6, 1, '노랑티', 2, 6, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (6, 2, 5, 1, 'M', 1, null, 1, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (7, 2, 5, 1, '파랑티', 2, 5, 1, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (8, 2, 6, 1, '노랑티', 2, 6, 1, true, now());
 
-insert into item_product_mapping (id, item_id, product_id, used_stock_quantity, activated, created_at) values (1, 1, 1, 1, true, now());
-insert into item_product_mapping (id, item_id, product_id, used_stock_quantity, activated, created_at) values (2, 2, 1, 1, true, now());
-insert into item_product_mapping (id, item_id, product_id, used_stock_quantity, activated, created_at) values (3, 3, 2, 1, true, now());
-insert into item_product_mapping (id, item_id, product_id, used_stock_quantity, activated, created_at) values (4, 4, 2, 1, true, now());
-insert into item_product_mapping (id, item_id, product_id, used_stock_quantity, activated, created_at) values (5, 5, 2, 1, true, now());
-insert into item_product_mapping (id, item_id, product_id, used_stock_quantity, activated, created_at) values (6, 6, 2, 1, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (9, 3, 7, 1, '3개 세트', 1, null, 3, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (10, 3, 8, 1, '10개 세트', 1, null, 10, true, now());
+
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (1, 1, 1, 1, true, now());
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (2, 2, 1, 1, true, now());
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (3, 3, 2, 1, true, now());
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (4, 4, 2, 1, true, now());
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (5, 5, 2, 1, true, now());
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (6, 6, 2, 1, true, now());
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (7, 7, 3, 3, true, now());
+insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (8, 7, 3, 10, true, now());

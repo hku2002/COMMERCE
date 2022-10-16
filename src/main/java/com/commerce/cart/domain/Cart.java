@@ -65,8 +65,9 @@ public class Cart extends BaseEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addQuantity(int quantity) {
-        this.userPurchaseQuantity += quantity;
+    public void addQuantity(int userPurchaseQuantity, int itemUsedQuantity) {
+        this.userPurchaseQuantity += userPurchaseQuantity;
+        this.itemUsedQuantity += userPurchaseQuantity * itemUsedQuantity;
         this.updatedAt = LocalDateTime.now();
     }
 

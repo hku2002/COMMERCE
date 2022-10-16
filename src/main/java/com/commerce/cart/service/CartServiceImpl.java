@@ -6,8 +6,10 @@ import com.commerce.cart.dto.CartResponseDto;
 import com.commerce.cart.repositiry.CartRepository;
 import com.commerce.global.common.dto.PagingCommonRequestDto;
 import com.commerce.product.domain.Item;
+import com.commerce.product.domain.ItemProductMapping;
 import com.commerce.product.domain.Option;
 import com.commerce.product.domain.Product;
+import com.commerce.product.repository.ItemProductMappingRepository;
 import com.commerce.product.repository.ItemRepository;
 import com.commerce.product.repository.OptionRepository;
 import com.commerce.product.repository.ProductRepository;
@@ -29,6 +31,7 @@ public class CartServiceImpl {
     private final CartRepository cartRepository;
     private final ProductRepository productRepository;
     private final ItemRepository itemRepository;
+    private final ItemProductMappingRepository itemProductMappingRepository;
     private final OptionRepository optionRepository;
 
     /**
@@ -46,22 +49,22 @@ public class CartServiceImpl {
      */
     @Transactional
     public void addCart(AddCartRequestDto requestDto) {
-        Cart cart = checkCart(requestDto.getItemId(), requestDto.getProductId());
+        Cart cart = checkCart(requestDto.getItemId(), requestDto.getProductId(), requestDto.getOptionId());
         if (!ObjectUtils.isEmpty(cart)) {
-            cart.addQuantity(requestDto.getQuantity());
+            cart.addQuantity(requestDto.getQuantity(), findOption(requestDto.getOptionId()).getItemUsedQuantity());
             return;
         }
 
         Item item = findItem(requestDto.getItemId());
         Product product = findProduct(requestDto.getProductId());
-        Option option = findOption(item.getId(), product.getId());
+        Option option = findOption(requestDto.getOptionId());
         cartRepository.save(Cart.builder()
                 .member(Member.builder().id(1L).build())
                 .product(product)
                 .item(item)
                 .option(option)
                 .userPurchaseQuantity(requestDto.getQuantity())
-                .itemUsedQuantity(requestDto.getQuantity() * item.getProductProductMapping().getUsedStockQuantity())
+                .itemUsedQuantity(requestDto.getQuantity() * option.getItemUsedQuantity())
                 .build());
     }
 
@@ -80,11 +83,24 @@ public class CartServiceImpl {
      * @param itemId
      */
     private Item findItem(Long itemId) {
-        Item item = itemRepository.findTop1ByIdAndActivated(itemId, true);
+        Item item = itemRepository.findByIdAndActivated(itemId, true);
         if (ObjectUtils.isEmpty(item)) {
             throw new IllegalArgumentException("해당 아이템이 존재하지 않습니다.");
         }
         return item;
+    }
+
+    /**
+     * 아이템 상품 매핑 정보 조회
+     * @param itemId
+     * @param productId
+     */
+    private ItemProductMapping findItemProductMapping(Long itemId, Long productId) {
+        ItemProductMapping itemProductMapping = itemProductMappingRepository.findTop1ByItemIdAndProductIdAndActivated(itemId, productId, true);
+        if (ObjectUtils.isEmpty(itemProductMapping)) {
+            throw new IllegalArgumentException("해당 아이템과 상품의 매핑 정보가 존재하지 않습니다.");
+        }
+        return itemProductMapping;
     }
 
     /**
@@ -113,17 +129,16 @@ public class CartServiceImpl {
      * @param itemId
      * @param productId
      */
-    private Cart checkCart(Long itemId, Long productId) {
-        return cartRepository.findTop1ByItemIdAndProductIdAndActivated(itemId, productId, true);
+    private Cart checkCart(Long itemId, Long productId, Long optionId) {
+        return cartRepository.findTop1ByItemIdAndProductIdAndOptionIdAndActivated(itemId, productId, optionId, true);
     }
 
     /**
      * 옵션 조회
-     * @param itemId
-     * @param productId
+     * @param optionId
      */
-    private Option findOption(Long itemId, Long productId) {
-        Option option = optionRepository.findTop1ByItemIdAndProductIdAndActivated(itemId, productId, true);
+    private Option findOption(Long optionId) {
+        Option option = optionRepository.findTop1ByIdAndActivated(optionId, true);
         if (ObjectUtils.isEmpty(option)) {
             throw new IllegalArgumentException("해당 옵션이 존재하지 않습니다.");
         }

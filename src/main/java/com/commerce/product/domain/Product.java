@@ -47,7 +47,7 @@ public class Product extends BaseEntity {
     @Column(name = "main_item_id", nullable = false)
     private Long mainItemId;
 
-    @OneToMany(mappedBy = "productId" , cascade = PERSIST)
+    @OneToMany(mappedBy = "product" , cascade = PERSIST)
     private List<ItemProductMapping> productDisplayMappings = new ArrayList<>();
 
     @Builder

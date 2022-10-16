@@ -15,6 +15,9 @@ public class AddCartRequestDto {
     private Long itemId;
 
     @NotNull
+    private Long optionId;
+
+    @NotNull
     private int quantity;
 
 }

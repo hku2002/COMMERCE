@@ -26,17 +26,17 @@ public class ItemProductMapping {
     private Long id;
 
     @JsonIgnore
-    @OneToOne(fetch = LAZY)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "item_id", updatable = false)
     private Item item;
 
     @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "product_id", updatable = false)
-    private Product productId;
+    private Product product;
 
-    @Column(name = "used_stock_quantity", nullable = false)
-    private int usedStockQuantity;
+    @Column(name = "item_used_quantity", nullable = false)
+    private int itemUsedQuantity;
 
     @Column(name = "activated", nullable = false)
     private boolean activated;
@@ -46,11 +46,11 @@ public class ItemProductMapping {
     private LocalDateTime createdAt;
 
     @Builder
-    public ItemProductMapping(Long id, Item item, Product productId, int usedQuantity, boolean activated) {
+    public ItemProductMapping(Long id, Item item, Product product, int itemUsedQuantity, boolean activated) {
         this.id = id;
         this.item = item;
-        this.productId = productId;
-        this.usedStockQuantity = usedQuantity;
+        this.product = product;
+        this.itemUsedQuantity = itemUsedQuantity;
         this.activated = activated;
         this.createdAt = LocalDateTime.now();
     }

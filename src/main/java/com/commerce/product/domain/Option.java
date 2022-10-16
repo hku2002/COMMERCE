@@ -44,8 +44,11 @@ public class Option extends BaseEntity {
     @Column(name = "parent_id")
     private Long parentId;
 
+    @Column(name = "item_used_quantity", nullable = false)
+    private int itemUsedQuantity;
+
     @Builder
-    public Option(Long id, List<OptionCartMapping> optionCartMappings, Long productId, Long itemId, Long itemProductMappingId, String name, int stage, Long parentId) {
+    public Option(Long id, List<OptionCartMapping> optionCartMappings, Long productId, Long itemId, Long itemProductMappingId, String name, int stage, Long parentId, int itemUsedQuantity) {
         this.id = id;
         this.optionCartMappings = optionCartMappings;
         this.productId = productId;
@@ -54,6 +57,7 @@ public class Option extends BaseEntity {
         this.name = name;
         this.stage = stage;
         this.parentId = parentId;
+        this.itemUsedQuantity = itemUsedQuantity;
     }
 
 }
