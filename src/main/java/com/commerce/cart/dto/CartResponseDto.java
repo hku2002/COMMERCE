@@ -21,11 +21,11 @@ public class CartResponseDto {
     public CartResponseDto(Cart cart) {
         id = cart.getId();
         productId = cart.getProduct().getId();
-        itemId = cart.getItemId();
+        itemId = cart.getItem().getId();
         quantity = cart.getUserPurchaseQuantity();
         productName = cart.getProduct().getName();
         optionName = cart.getOption().getName();
-        price = cart.getPrice();
+        price = cart.getItem().getPrice();
         imageUrl = cart.getProduct().getImgPath();
     }
 }

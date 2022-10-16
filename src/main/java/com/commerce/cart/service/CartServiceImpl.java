@@ -9,6 +9,7 @@ import com.commerce.product.domain.Item;
 import com.commerce.product.domain.Product;
 import com.commerce.product.repository.ItemRepository;
 import com.commerce.product.repository.ProductRepository;
+import com.commerce.user.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class CartServiceImpl {
      * @param
      */
     public List<CartResponseDto> findCarts(PagingCommonRequestDto requestDto) {
-        return cartRepository.findWithOptionAndProductByUserId(1L, PageRequest.of(requestDto.getLimit(), requestDto.getOffset()))
+        return cartRepository.findWithOptionAndProductAndItemByMemberId(1L, PageRequest.of(requestDto.getLimit(), requestDto.getOffset()))
                 .stream().map(CartResponseDto::new).collect(Collectors.toList());
     }
 
@@ -45,12 +46,11 @@ public class CartServiceImpl {
         Item item = findItem(requestDto.getProductId());
         Product product = findProduct(requestDto.getProductId());
         cartRepository.save(Cart.builder()
-                .userId(1L)
+                .member(Member.builder().id(1L).build())
                 .product(product)
-                .itemId(item.getId())
+                .item(item)
                 .userPurchaseQuantity(requestDto.getQuantity())
                 .itemUsedQuantity(requestDto.getQuantity() * item.getProductProductMapping().getUsedStockQuantity())
-                .price(item.getPrice())
                 .build());
     }
 
@@ -90,7 +90,7 @@ public class CartServiceImpl {
      * @param cartId
      */
     private Cart findCart(Long cartId) {
-        Cart cart = cartRepository.findByIdAndUserId(cartId, 1L);
+        Cart cart = cartRepository.findByIdAndMemberId(cartId, 1L);
         if (ObjectUtils.isEmpty(cart)) {
             throw new IllegalArgumentException("해당 장바구니가 존재하지 않습니다.");
         }

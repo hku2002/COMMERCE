@@ -15,7 +15,7 @@ import static com.commerce.order.domain.Order.OrderStatus;
 public class OrderResponseDto {
 
     private Long id;
-    private Long userId;
+    private Long memberId;
     private String name;
     private OrderStatus status;
     private int totalPrice;
@@ -24,7 +24,7 @@ public class OrderResponseDto {
 
     public OrderResponseDto(Order order) {
         this.id = order.getId();
-        this.userId = order.getMember().getId();
+        this.memberId = order.getMember().getId();
         this.name = order.getName();
         this.status = order.getStatus();
         this.totalPrice = order.getTotalPrice();

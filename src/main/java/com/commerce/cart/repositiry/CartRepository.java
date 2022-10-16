@@ -10,8 +10,14 @@ import java.util.List;
 
 @Repository
 public interface CartRepository extends JpaRepository<Cart, Long> {
-    @Query("select c from Cart c join fetch c.option o join fetch c.product where c.userId = :userId and c.activated = true")
-    List<Cart> findWithOptionAndProductByUserId(Long userId, Pageable pageable);
+    @Query("select c from Cart c " +
+           "join fetch c.option o " +
+           "join fetch c.product " +
+           "join fetch c.item " +
+           "where c.member.id = :memberId " +
+           "and c.activated = true")
+    List<Cart> findWithOptionAndProductAndItemByMemberId(Long memberId, Pageable pageable);
 
-    Cart findByIdAndUserId(Long id, Long userId);
+    @Query("select c from Cart c where c.id = :id and c.member.id = :memberId and c.activated = true")
+    Cart findByIdAndMemberId(Long id, Long memberId);
 }

@@ -1,9 +1,10 @@
 package com.commerce.cart.domain;
 
 import com.commerce.global.common.BaseEntity;
-import com.commerce.global.common.Price;
+import com.commerce.product.domain.Item;
 import com.commerce.product.domain.Option;
 import com.commerce.product.domain.Product;
+import com.commerce.user.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,14 +36,15 @@ public class Cart extends BaseEntity {
     @JoinColumn(name = "product_id", updatable = false)
     private Product product;
 
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "item_id", updatable = false)
+    private Item item;
+
+    @ManyToOne(fetch = LAZY)
+    private Member member;
+
     @OneToMany(mappedBy = "id", cascade = CascadeType.PERSIST)
     private List<OptionCartMapping> optionCartMappings;
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
-    @Column(name = "item_id", nullable = false)
-    private Long itemId;
 
     @Column(name = "user_purchase_quantity", nullable = false)
     private int userPurchaseQuantity;
@@ -50,19 +52,16 @@ public class Cart extends BaseEntity {
     @Column(name = "item_used_quantity", nullable = false)
     private int itemUsedQuantity;
 
-    @Embedded
-    private Price price;
-
     @Builder
-    public Cart(Long id, Option option, Long userId, Product product, Long itemId, int userPurchaseQuantity, int itemUsedQuantity, Price price) {
+    public Cart(Long id, Option option, Product product, Item item, Member member, List<OptionCartMapping> optionCartMappings, int userPurchaseQuantity, int itemUsedQuantity) {
         this.id = id;
         this.option = option;
         this.product = product;
-        this.userId = userId;
-        this.itemId = itemId;
+        this.item = item;
+        this.member = member;
+        this.optionCartMappings = optionCartMappings;
         this.userPurchaseQuantity = userPurchaseQuantity;
         this.itemUsedQuantity = itemUsedQuantity;
-        this.price = price;
     }
 
     public void updateActivated(Boolean activated) {
