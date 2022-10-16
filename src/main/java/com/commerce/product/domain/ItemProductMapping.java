@@ -38,16 +38,20 @@ public class ItemProductMapping {
     @Column(name = "used_stock_quantity", nullable = false)
     private int usedStockQuantity;
 
+    @Column(name = "activated", nullable = false)
+    private boolean activated;
+
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public ItemProductMapping(Long id, Item item, Product productId, int usedQuantity) {
+    public ItemProductMapping(Long id, Item item, Product productId, int usedQuantity, boolean activated) {
         this.id = id;
         this.item = item;
         this.productId = productId;
         this.usedStockQuantity = usedQuantity;
+        this.activated = activated;
         this.createdAt = LocalDateTime.now();
     }
 }

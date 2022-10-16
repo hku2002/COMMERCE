@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-import static javax.persistence.GenerationType.AUTO;
+import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -22,7 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class Delivery extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 

@@ -13,6 +13,9 @@ import static javax.persistence.EnumType.STRING;
 @Embeddable
 public class Price {
 
+    @Column(name = "default_price", nullable = false)
+    private int defaultPrice;
+
     @Column(name = "sale_price", nullable = false)
     private int salePrice;
 
@@ -29,7 +32,8 @@ public class Price {
     protected Price() {}
 
     @Builder
-    public Price(int salePrice, int discountPrice, int discountRate, DiscountMethod discountMethod) {
+    public Price(int defaultPrice, int salePrice, int discountPrice, int discountRate, DiscountMethod discountMethod) {
+        this.defaultPrice = defaultPrice;
         this.salePrice = salePrice;
         this.discountPrice = discountPrice;
         this.discountRate = discountRate;

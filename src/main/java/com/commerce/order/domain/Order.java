@@ -17,6 +17,7 @@ import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
+import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -26,7 +27,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class Order {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 

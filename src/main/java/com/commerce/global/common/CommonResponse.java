@@ -2,16 +2,20 @@ package com.commerce.global.common;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.http.ResponseEntity;
 
 @Getter
-@NoArgsConstructor
 public class CommonResponse<T> {
 
     private int status;
     private String message;
     private T response;
+
+    public CommonResponse() {
+        this.status = 200;
+        this.message = "success";
+        this.response = (T) "";
+    }
 
     public CommonResponse(T response) {
         this.status = 200;

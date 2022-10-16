@@ -20,7 +20,7 @@ public class CartController {
     }
 
     @PostMapping("/v1/cart")
-    public ResponseEntity<?> addCart(AddCartRequestDto addCartRequestDto) {
+    public ResponseEntity<?> addCart(@RequestBody AddCartRequestDto addCartRequestDto) {
         cartServiceImpl.addCart(addCartRequestDto);
         return CommonResponse.setResponse();
     }

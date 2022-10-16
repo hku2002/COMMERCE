@@ -1,7 +1,7 @@
 package com.commerce.product.domain;
 
-import com.commerce.global.common.BaseEntity;
 import com.commerce.cart.domain.OptionCartMapping;
+import com.commerce.global.common.BaseEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
-import static javax.persistence.GenerationType.AUTO;
+import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -19,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class Option extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 

@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
-import static javax.persistence.GenerationType.AUTO;
+import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Getter
@@ -24,7 +24,7 @@ import static lombok.AccessLevel.PROTECTED;
 public class Cart extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = AUTO)
+    @GeneratedValue(strategy = IDENTITY)
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
@@ -62,6 +62,7 @@ public class Cart extends BaseEntity {
         this.optionCartMappings = optionCartMappings;
         this.userPurchaseQuantity = userPurchaseQuantity;
         this.itemUsedQuantity = itemUsedQuantity;
+        this.createdAt = LocalDateTime.now();
     }
 
     public void updateActivated(Boolean activated) {
