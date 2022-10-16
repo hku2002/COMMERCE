@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -43,9 +42,6 @@ public class Cart extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     private Member member;
 
-    @OneToMany(mappedBy = "id", cascade = CascadeType.PERSIST)
-    private List<OptionCartMapping> optionCartMappings;
-
     @Column(name = "user_purchase_quantity", nullable = false)
     private int userPurchaseQuantity;
 
@@ -53,13 +49,12 @@ public class Cart extends BaseEntity {
     private int itemUsedQuantity;
 
     @Builder
-    public Cart(Long id, Option option, Product product, Item item, Member member, List<OptionCartMapping> optionCartMappings, int userPurchaseQuantity, int itemUsedQuantity) {
+    public Cart(Long id, Option option, Product product, Item item, Member member, int userPurchaseQuantity, int itemUsedQuantity) {
         this.id = id;
         this.option = option;
         this.product = product;
         this.item = item;
         this.member = member;
-        this.optionCartMappings = optionCartMappings;
         this.userPurchaseQuantity = userPurchaseQuantity;
         this.itemUsedQuantity = itemUsedQuantity;
         this.createdAt = LocalDateTime.now();
@@ -67,6 +62,11 @@ public class Cart extends BaseEntity {
 
     public void updateActivated(Boolean activated) {
         this.activated = activated;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void addQuantity(int quantity) {
+        this.userPurchaseQuantity += quantity;
         this.updatedAt = LocalDateTime.now();
     }
 
