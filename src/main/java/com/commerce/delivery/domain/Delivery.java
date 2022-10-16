@@ -3,7 +3,9 @@ package com.commerce.delivery.domain;
 import com.commerce.global.common.Address;
 import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
+import com.commerce.order.domain.Order;
 import com.commerce.user.domain.Member;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,15 +29,21 @@ public class Delivery extends BaseEntity {
     @JoinColumn(name = "member_id", referencedColumnName = "id", updatable = false)
     private Member member;
 
+    @OneToOne
+    @JoinColumn(name = "order_id", referencedColumnName = "id", updatable = false)
+    private Order order;
+
     @Embedded
     private Address address;
 
     @Column(name = "status", nullable = false, length = 30)
     private DeliveryStatus status;
 
-    public Delivery (Long id, Member member, Address address, DeliveryStatus status) {
+    @Builder
+    public Delivery (Long id, Member member, Order order, Address address, DeliveryStatus status) {
         this.id = id;
         this.member = member;
+        this.order = order;
         this.address = address;
         this.status = status;
     }
