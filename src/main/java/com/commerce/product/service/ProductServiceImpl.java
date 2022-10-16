@@ -2,7 +2,7 @@ package com.commerce.product.service;
 
 import com.commerce.product.domain.Product;
 import com.commerce.product.dto.ProductResponseDto;
-import com.commerce.product.dto.ProductsRequestDto;
+import com.commerce.global.common.dto.PagingCommonRequestDto;
 import com.commerce.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -26,7 +26,7 @@ public class ProductServiceImpl {
      * 상품 목록 조회
      * param : productsRequestDto
      */
-    public List<ProductResponseDto> findProducts(ProductsRequestDto productsRequestDto) {
+    public List<ProductResponseDto> findProducts(PagingCommonRequestDto productsRequestDto) {
         List<Product> products = productRepository.findProductsByActivatedAndStatusIn(true
                 , List.of(DISPLAY, OUT_OF_STOCK)
                 , PageRequest.of(productsRequestDto.getLimit(), productsRequestDto.getOffset()));

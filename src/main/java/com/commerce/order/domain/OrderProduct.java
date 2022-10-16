@@ -3,6 +3,7 @@ package com.commerce.order.domain;
 import com.commerce.global.common.Price;
 import com.commerce.product.domain.Product;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Getter
 @Entity
 @NoArgsConstructor(access = PROTECTED)
-@Table(name = "ORDER_DETAIL")
+@Table(name = "ORDER_PRODUCT")
 public class OrderProduct {
 
     @Id
@@ -26,12 +27,13 @@ public class OrderProduct {
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
+    @JsonIgnore
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "order_id", referencedColumnName = "id", updatable = false)
     private Order order;
 
-    @OneToOne(fetch = LAZY)
-    @JoinColumn(name = "display_id", referencedColumnName = "id", updatable = false)
+    @ManyToOne(fetch = LAZY)
+    @JoinColumn(name = "product_id", referencedColumnName = "id", updatable = false)
     private Product product;
 
     @Embedded
@@ -43,9 +45,6 @@ public class OrderProduct {
     @Column(name = "user_purchase_quantity", nullable = false)
     private int userPurchaseQuantity;
 
-    @Column(name = "item_used_quantity", nullable = false)
-    private int itemUsedQuantity;
-
     @Column(name = "activated", nullable = false)
     private boolean activated;
 
@@ -54,14 +53,13 @@ public class OrderProduct {
     private LocalDateTime createdAt;
 
     @Builder
-    public OrderProduct(long id, Order order, Product product, Price price, int supplyPrice, int userPurchaseQuantity, int itemUsedQuantity, boolean activated, LocalDateTime createdAt) {
+    public OrderProduct(long id, Order order, Product product, Price price, int supplyPrice, int userPurchaseQuantity, boolean activated, LocalDateTime createdAt) {
         this.id = id;
         this.order = order;
         this.product = product;
         this.price = price;
         this.supplyPrice = supplyPrice;
         this.userPurchaseQuantity = userPurchaseQuantity;
-        this.itemUsedQuantity = itemUsedQuantity;
         this.activated = activated;
         this.createdAt = createdAt;
     }

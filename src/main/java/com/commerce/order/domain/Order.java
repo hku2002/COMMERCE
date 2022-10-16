@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static javax.persistence.FetchType.LAZY;
@@ -30,6 +32,12 @@ public class Order {
     @JoinColumn(name = "member_id", referencedColumnName = "id", updatable = false)
     private Member member;
 
+    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
+    private List<OrderProduct> orderProducts = new ArrayList<>();
+
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private OrderStatus status;
@@ -42,9 +50,11 @@ public class Order {
     private LocalDateTime orderDateTime;
 
     @Builder
-    public Order (Long id, Member member, int totalPrice) {
+    public Order (Long id, Member member, List<OrderProduct> orderProducts, String name, int totalPrice) {
         this.id = id;
         this.member = member;
+        this.orderProducts = orderProducts;
+        this.name = name;
         this.status = OrderStatus.COMPLETED;
         this.totalPrice = totalPrice;
         this.orderDateTime = LocalDateTime.now();

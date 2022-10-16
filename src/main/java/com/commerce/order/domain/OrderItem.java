@@ -41,17 +41,21 @@ public class OrderItem {
     @Column(name = "activated", nullable = false)
     private boolean activated;
 
+    @Column(name = "item_used_quantity", nullable = false)
+    private int itemUsedQuantity;
+
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public OrderItem(Long id, OrderProduct orderProduct, Long itemId, Price price, int supplyPrice, boolean activated, LocalDateTime createdAt) {
+    public OrderItem(Long id, OrderProduct orderProduct, Long itemId, Price price, int supplyPrice, int itemUsedQuantity, boolean activated, LocalDateTime createdAt) {
         this.id = id;
         this.orderProduct = orderProduct;
         this.itemId = itemId;
         this.price = price;
         this.supplyPrice = supplyPrice;
+        this.itemUsedQuantity = itemUsedQuantity;
         this.activated = activated;
         this.createdAt = createdAt;
     }

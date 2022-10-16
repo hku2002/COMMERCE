@@ -1,7 +1,7 @@
 package com.commerce.product.controller;
 
 import com.commerce.global.common.CommonResponse;
-import com.commerce.product.dto.ProductsRequestDto;
+import com.commerce.global.common.dto.PagingCommonRequestDto;
 import com.commerce.product.service.ProductServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,7 @@ public class ProductController {
     private final ProductServiceImpl productServiceImpl;
 
     @GetMapping("/v1/products")
-    public ResponseEntity<?> products(ProductsRequestDto productsRequestDto) {
+    public ResponseEntity<?> products(PagingCommonRequestDto productsRequestDto) {
         return CommonResponse.setResponse(productServiceImpl.findProducts(productsRequestDto));
     }
 
