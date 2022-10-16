@@ -38,7 +38,7 @@ public class Order {
     private int totalPrice;
 
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime orderDateTime;
 
     @Builder

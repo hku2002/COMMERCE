@@ -19,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @NoArgsConstructor(access = PROTECTED)
 @Table(name = "ORDER_DETAIL")
-public class OrderDetail {
+public class OrderProduct {
 
     @Id
     @GeneratedValue(strategy = AUTO)
@@ -50,11 +50,11 @@ public class OrderDetail {
     private boolean activated;
 
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public OrderDetail(long id, Order order, Product product, Price price, int supplyPrice, int userPurchaseQuantity, int itemUsedQuantity, boolean activated, LocalDateTime createdAt) {
+    public OrderProduct(long id, Order order, Product product, Price price, int supplyPrice, int userPurchaseQuantity, int itemUsedQuantity, boolean activated, LocalDateTime createdAt) {
         this.id = id;
         this.order = order;
         this.product = product;
