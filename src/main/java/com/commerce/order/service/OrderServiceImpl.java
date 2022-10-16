@@ -22,7 +22,7 @@ public class OrderServiceImpl {
      * @param userId
      */
     public List<OrderResponseDto> findOrders(Long userId, int limit, int offset) {
-        return orderRepository.findAllWithOrderProductsAndDelivery(userId, PageRequest.of(limit, offset))
+        return orderRepository.findWithOrderProductsAndDeliveryByUserId(userId, PageRequest.of(limit, offset))
                 .stream().map(OrderResponseDto::new).collect(Collectors.toList());
     }
 
