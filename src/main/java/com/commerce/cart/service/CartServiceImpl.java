@@ -90,7 +90,10 @@ public class CartServiceImpl {
      * @param cartId
      */
     private Cart findCart(Long cartId) {
-        return cartRepository.findById(cartId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 장바구니가 없습니다."));
+        Cart cart = cartRepository.findByIdAndUserId(cartId, 1L);
+        if (ObjectUtils.isEmpty(cart)) {
+            throw new IllegalArgumentException("해당 장바구니가 존재하지 않습니다.");
+        }
+        return cart;
     }
 }

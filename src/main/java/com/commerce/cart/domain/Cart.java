@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
@@ -66,6 +67,7 @@ public class Cart extends BaseEntity {
 
     public void updateActivated(Boolean activated) {
         this.activated = activated;
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

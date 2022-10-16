@@ -25,7 +25,7 @@ public class CartController {
         return CommonResponse.setResponse();
     }
 
-    @DeleteMapping("/v1/cart")
+    @DeleteMapping("/v1/cart/{cartId}")
     public ResponseEntity<?> deleteCart(@PathVariable Long cartId) {
         cartServiceImpl.deleteCart(cartId);
         return CommonResponse.setResponse();

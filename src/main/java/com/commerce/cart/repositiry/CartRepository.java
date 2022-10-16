@@ -12,4 +12,6 @@ import java.util.List;
 public interface CartRepository extends JpaRepository<Cart, Long> {
     @Query("select c from Cart c join fetch c.option o join fetch c.product where c.userId = :userId and c.activated = true")
     List<Cart> findWithOptionAndProductByUserId(Long userId, Pageable pageable);
+
+    Cart findByIdAndUserId(Long id, Long userId);
 }
