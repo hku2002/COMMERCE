@@ -1,5 +1,6 @@
 package com.commerce.order.domain;
 
+import com.commerce.delivery.domain.Delivery;
 import com.commerce.global.common.IEnumType;
 import com.commerce.user.domain.Member;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
+import static javax.persistence.CascadeType.*;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.AUTO;
 import static lombok.AccessLevel.PROTECTED;
@@ -32,7 +34,10 @@ public class Order {
     @JoinColumn(name = "member_id", referencedColumnName = "id", updatable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
+    @OneToOne(mappedBy = "order", cascade = PERSIST)
+    private Delivery delivery;
+
+    @OneToMany(mappedBy = "order", cascade = PERSIST)
     private List<OrderProduct> orderProducts = new ArrayList<>();
 
     @Column(name = "name", nullable = false)
@@ -50,9 +55,10 @@ public class Order {
     private LocalDateTime orderDateTime;
 
     @Builder
-    public Order (Long id, Member member, List<OrderProduct> orderProducts, String name, int totalPrice) {
+    public Order (Long id, Member member, Delivery delivery, List<OrderProduct> orderProducts, String name, int totalPrice) {
         this.id = id;
         this.member = member;
+        this.delivery = delivery;
         this.orderProducts = orderProducts;
         this.name = name;
         this.status = OrderStatus.COMPLETED;

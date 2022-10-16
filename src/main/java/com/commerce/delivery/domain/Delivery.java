@@ -5,6 +5,7 @@ import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
 import com.commerce.order.domain.Order;
 import com.commerce.user.domain.Member;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,6 +30,7 @@ public class Delivery extends BaseEntity {
     @JoinColumn(name = "member_id", referencedColumnName = "id", updatable = false)
     private Member member;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "order_id", referencedColumnName = "id", updatable = false)
     private Order order;

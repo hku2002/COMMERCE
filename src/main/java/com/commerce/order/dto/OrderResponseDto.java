@@ -1,5 +1,6 @@
 package com.commerce.order.dto;
 
+import com.commerce.delivery.domain.Delivery;
 import com.commerce.order.domain.Order;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,6 +19,7 @@ public class OrderResponseDto {
     private String name;
     private OrderStatus status;
     private int totalPrice;
+    private Delivery delivery;
     private List<OrderProductVo> orderProducts;
 
     public OrderResponseDto(Order order) {
@@ -26,6 +28,7 @@ public class OrderResponseDto {
         this.name = order.getName();
         this.status = order.getStatus();
         this.totalPrice = order.getTotalPrice();
+        this.delivery = order.getDelivery();
         this.orderProducts = order.getOrderProducts().stream().map(OrderProductVo::new).collect(Collectors.toList());
     }
 

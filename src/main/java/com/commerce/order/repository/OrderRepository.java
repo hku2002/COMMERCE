@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    @Query("select o from Order o join fetch o.member m where o.member.id = :userId")
-    List<Order> findAllWithOrderProducts(Long userId, Pageable pageable);
+    @Query("select o from Order o join fetch o.member m join fetch o.delivery where o.member.id = :userId")
+    List<Order> findAllWithOrderProductsAndDelivery(Long userId, Pageable pageable);
 
 }
