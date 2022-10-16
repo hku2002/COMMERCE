@@ -1,15 +1,12 @@
-package com.commerce.user.constants;
+package com.commerce.product.domain;
 
 import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.Price;
-import com.commerce.product.domain.ItemProductMapping;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.GenerationType.AUTO;
@@ -41,18 +38,18 @@ public class Item extends BaseEntity {
     @Column(name = "stock_quantity", nullable = false)
     private int stockQuantity;
 
-    @OneToMany(mappedBy = "itemId", cascade = PERSIST)
-    private List<ItemProductMapping> productDisplayMappings = new ArrayList<>();
+    @OneToOne(mappedBy = "item", cascade = PERSIST)
+    private ItemProductMapping productProductMapping;
 
     @Builder
-    public Item(long id, String name, String imgPath, Price price, int supplyPrice, int stockQuantity, List<ItemProductMapping> productDisplayMappings) {
+    public Item(long id, String name, String imgPath, Price price, int supplyPrice, int stockQuantity, ItemProductMapping productProductMapping) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;
         this.price = price;
         this.supplyPrice = supplyPrice;
         this.stockQuantity = stockQuantity;
-        this.productDisplayMappings = productDisplayMappings;
+        this.productProductMapping = productProductMapping;
     }
 
 }

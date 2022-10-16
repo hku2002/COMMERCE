@@ -1,6 +1,6 @@
 package com.commerce.product.service;
 
-import com.commerce.user.constants.Item;
+import com.commerce.product.domain.Item;
 import com.commerce.product.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

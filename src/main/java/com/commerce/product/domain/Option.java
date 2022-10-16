@@ -1,7 +1,7 @@
 package com.commerce.product.domain;
 
 import com.commerce.global.common.BaseEntity;
-import com.commerce.order.domain.OptionCartMapping;
+import com.commerce.cart.domain.OptionCartMapping;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

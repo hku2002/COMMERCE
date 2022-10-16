@@ -1,4 +1,4 @@
-package com.commerce.order.domain;
+package com.commerce.cart.domain;
 
 import com.commerce.global.common.BaseEntity;
 import lombok.Builder;

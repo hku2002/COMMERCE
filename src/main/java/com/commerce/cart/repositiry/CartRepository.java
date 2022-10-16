@@ -1,6 +1,6 @@
-package com.commerce.order.repository;
+package com.commerce.cart.repositiry;
 
-import com.commerce.order.domain.Cart;
+import com.commerce.cart.domain.Cart;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

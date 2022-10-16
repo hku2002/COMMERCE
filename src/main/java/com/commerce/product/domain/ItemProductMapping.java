@@ -1,6 +1,5 @@
 package com.commerce.product.domain;
 
-import com.commerce.user.constants.Item;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
@@ -17,7 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
-@Table(name = "PRODUCT_DISPLAY_MAPPING")
+@Table(name = "ITEM_PRODUCT_MAPPING")
 @NoArgsConstructor(access = PROTECTED)
 public class ItemProductMapping {
 
@@ -27,9 +26,9 @@ public class ItemProductMapping {
     private Long id;
 
     @JsonIgnore
-    @ManyToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     @JoinColumn(name = "item_id", updatable = false)
-    private Item itemId;
+    private Item item;
 
     @JsonIgnore
     @ManyToOne(fetch = LAZY)
@@ -44,9 +43,9 @@ public class ItemProductMapping {
     private LocalDateTime createdAt;
 
     @Builder
-    public ItemProductMapping(Long id, Item itemId, Product productId, int usedQuantity) {
+    public ItemProductMapping(Long id, Item item, Product productId, int usedQuantity) {
         this.id = id;
-        this.itemId = itemId;
+        this.item = item;
         this.productId = productId;
         this.usedStockQuantity = usedQuantity;
         this.createdAt = LocalDateTime.now();
