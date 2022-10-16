@@ -1,8 +1,11 @@
 package com.commerce.product.service;
 
-import com.commerce.product.domain.Product;
-import com.commerce.product.dto.ProductResponseDto;
 import com.commerce.global.common.dto.PagingCommonRequestDto;
+import com.commerce.product.domain.Product;
+import com.commerce.product.dto.OptionVo;
+import com.commerce.product.dto.ProductDetailResponseDto;
+import com.commerce.product.dto.ProductResponseDto;
+import com.commerce.product.repository.OptionRepository;
 import com.commerce.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +24,7 @@ import static com.commerce.product.domain.Product.DisplayStatus.OUT_OF_STOCK;
 public class ProductServiceImpl {
 
     private final ProductRepository productRepository;
+    private final OptionRepository optionRepository;
 
     /**
      * 상품 목록 조회
@@ -37,8 +41,18 @@ public class ProductServiceImpl {
      * 상품 상세 조회
      * param id
      */
-    public ProductResponseDto findProduct(Long id) {
-        return new ProductResponseDto(productRepository.findById(id)
+    public ProductDetailResponseDto findProduct(Long id) {
+        ProductDetailResponseDto responseDto = new ProductDetailResponseDto(productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다.")));
+        responseDto.setOptions(findOptions(id));
+        return responseDto;
+    }
+
+    /**
+     * 옵션 목록 조회
+     * @param productId
+     */
+    private List<OptionVo> findOptions(Long productId) {
+        return optionRepository.findByProductIdAndActivated(productId, true).stream().map(OptionVo::new).collect(Collectors.toList());
     }
 }
