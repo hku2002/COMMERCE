@@ -2,6 +2,7 @@ package com.commerce.order.controller;
 
 import com.commerce.global.common.CommonResponse;
 import com.commerce.global.common.dto.PagingCommonRequestDto;
+import com.commerce.order.dto.AddOrderRequestDto;
 import com.commerce.order.service.OrderServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ public class OrderController {
     }
 
     @PostMapping("/v1/order")
-    public ResponseEntity<?> addOrder() {
-        orderServiceImpl.addOrder();
+    public ResponseEntity<?> addOrder(@RequestBody AddOrderRequestDto addOrderRequestDto) {
+        orderServiceImpl.addOrder(addOrderRequestDto.getCartIds());
         return CommonResponse.setResponse();
     }
 

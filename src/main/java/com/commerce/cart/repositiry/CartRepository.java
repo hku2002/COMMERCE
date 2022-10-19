@@ -22,4 +22,11 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
     Cart findByIdAndMemberId(Long id, Long memberId);
 
     Cart findTop1ByItemIdAndProductIdAndOptionIdAndActivated(Long itemId, Long productId, Long optionId, boolean activated);
+
+    @Query("select c from Cart c " +
+           "join fetch c.option o " +
+           "join fetch c.item " +
+           "where c.id in :cartIds " +
+           "and c.activated = true")
+    List<Cart> findWithOptionAndItem(List<Long> cartIds);
 }

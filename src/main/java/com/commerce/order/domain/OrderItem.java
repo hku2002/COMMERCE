@@ -7,11 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
 
 import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
-import static javax.persistence.GenerationType.AUTO;
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -26,9 +24,9 @@ public class OrderItem {
     @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_product_id", referencedColumnName = "id", updatable = false)
-    private OrderProduct orderProduct;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", referencedColumnName = "id", updatable = false)
+    private Order order;
 
     @Column(name = "item_id", nullable = false)
     private Long itemId;
@@ -39,25 +37,29 @@ public class OrderItem {
     @Column(name = "supply_price", nullable = false)
     private int supplyPrice;
 
-    @Column(name = "activated", nullable = false)
-    private boolean activated;
+    @Column(name = "user_purchase_quantity", nullable = false)
+    private int userPurchaseQuantity;
 
     @Column(name = "item_used_quantity", nullable = false)
     private int itemUsedQuantity;
+
+    @Column(name = "activated", nullable = false)
+    private boolean activated;
 
     @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Builder
-    public OrderItem(Long id, OrderProduct orderProduct, Long itemId, Price price, int supplyPrice, int itemUsedQuantity, boolean activated, LocalDateTime createdAt) {
+    public OrderItem(Long id, Order order, Long itemId, Price price, int supplyPrice, int userPurchaseQuantity, int itemUsedQuantity) {
         this.id = id;
-        this.orderProduct = orderProduct;
+        this.order = order;
         this.itemId = itemId;
         this.price = price;
         this.supplyPrice = supplyPrice;
+        this.userPurchaseQuantity = userPurchaseQuantity;
         this.itemUsedQuantity = itemUsedQuantity;
-        this.activated = activated;
-        this.createdAt = createdAt;
+        this.activated = true;
+        this.createdAt = LocalDateTime.now();
     }
 }

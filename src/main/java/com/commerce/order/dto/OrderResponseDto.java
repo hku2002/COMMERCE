@@ -5,9 +5,6 @@ import com.commerce.order.domain.Order;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static com.commerce.order.domain.Order.OrderStatus;
 
 @Getter
@@ -20,7 +17,6 @@ public class OrderResponseDto {
     private OrderStatus status;
     private int totalPrice;
     private Delivery delivery;
-    private List<OrderProductVo> orderProducts;
 
     public OrderResponseDto(Order order) {
         this.id = order.getId();
@@ -29,7 +25,6 @@ public class OrderResponseDto {
         this.status = order.getStatus();
         this.totalPrice = order.getTotalPrice();
         this.delivery = order.getDelivery();
-        this.orderProducts = order.getOrderProducts().stream().map(OrderProductVo::new).collect(Collectors.toList());
     }
 
 }
