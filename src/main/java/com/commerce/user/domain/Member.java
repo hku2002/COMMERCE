@@ -42,7 +42,7 @@ public class Member extends BaseEntity {
     private Address address;
 
     @Builder
-    public Member (long id, String userId, String password, String username, String email, String phoneNumber, Address address, boolean active, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public Member (long id, String userId, String password, String username, String email, String phoneNumber, Address address, boolean activated, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.userId = userId;
         this.password = password;
