@@ -42,22 +42,17 @@ public class OrderServiceImpl {
 
     /**
      * 주문 추가 (주문 완료)
+     * @param cartIds
      */
     @Transactional
     public void addOrder(List<Long> cartIds) {
-        List<Cart> carts = findCarts(cartIds);
+        List<Cart> carts = checkCarts(cartIds);
         Member member = Member.builder().id(1L).build();
-
-        int totalPrice = 0;
-        for (Cart cart : carts) {
-            totalPrice += cart.getItem().getPrice().getSalePrice();
-        }
-
         Order order = orderRepository.save(
                 Order.builder()
                 .member(member)
-                .name("주문")
-                .totalPrice(totalPrice)
+                .name(createOrderName(carts))
+                .totalPrice(calculateTotalPrice(carts))
                 .build());
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -91,8 +86,36 @@ public class OrderServiceImpl {
      * 장바구니 목록 조회
      * @param cartIds
      */
-    private List<Cart> findCarts(List<Long> cartIds) {
-        return cartRepository.findWithOptionAndItem(cartIds);
+    private List<Cart> checkCarts(List<Long> cartIds) {
+        List<Cart> carts = cartRepository.findWithOptionAndItem(cartIds);
+        if (carts.size() != cartIds.size()) {
+            throw new IllegalArgumentException("잘못된 장바구니 아이디입니다.");
+        }
+        return carts;
+    }
+
+    /**
+     * 총 주문 가격 계산
+     * @param carts
+     */
+    private int calculateTotalPrice(List<Cart> carts) {
+        int totalPrice = 0;
+        for (Cart cart : carts) {
+            totalPrice += cart.getItem().getPrice().getSalePrice();
+        }
+        return totalPrice;
+    }
+
+    /**
+     * 주문 상품 이름 생성
+     * @param carts
+     */
+    private String createOrderName(List<Cart> carts) {
+        String name = carts.get(0).getProduct().getName();
+        if (carts.size() > 1) {
+            name += " 외 " + (carts.size() - 1) + "건";
+        }
+        return name;
     }
 
 }
