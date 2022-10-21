@@ -2,6 +2,7 @@ package com.commerce.cart.dto;
 
 import com.commerce.cart.domain.Cart;
 import com.commerce.global.common.Price;
+import com.commerce.product.domain.Product.DisplayStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,6 +18,7 @@ public class CartResponseDto {
     private String optionName;
     private Price price;
     private String imageUrl;
+    private DisplayStatus status;
 
     public CartResponseDto(Cart cart) {
         id = cart.getId();
@@ -27,5 +29,6 @@ public class CartResponseDto {
         optionName = cart.getOption().getName();
         price = cart.getItem().getPrice();
         imageUrl = cart.getProduct().getImgPath();
+        status = cart.getProduct().getStatus();
     }
 }
