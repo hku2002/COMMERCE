@@ -55,7 +55,7 @@ public class CartServiceImpl {
             return;
         }
 
-        Item item = findItem(requestDto.getItemId());
+        Item item = checkItem(requestDto.getItemId());
         Product product = findProduct(requestDto.getProductId());
         Option option = findOption(requestDto.getOptionId());
         cartRepository.save(Cart.builder()
@@ -79,13 +79,16 @@ public class CartServiceImpl {
     }
 
     /**
-     * 아이템 조회 및 validation 여부 확인
+     * 아이템 조회, 재고 확인 및 validation 여부 확인
      * @param itemId
      */
-    private Item findItem(Long itemId) {
+    private Item checkItem(Long itemId) {
         Item item = itemRepository.findByIdAndActivated(itemId, true);
         if (ObjectUtils.isEmpty(item)) {
             throw new IllegalArgumentException("해당 아이템이 존재하지 않습니다.");
+        }
+        if (item.getStockQuantity() < 1) {
+            throw new IllegalArgumentException("해당 상품은 품절되었습니다.");
         }
         return item;
     }
