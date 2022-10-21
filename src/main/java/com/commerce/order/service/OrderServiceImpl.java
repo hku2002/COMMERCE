@@ -54,7 +54,8 @@ public class OrderServiceImpl {
      */
     @Transactional
     public void addOrder(List<Long> cartIds) {
-        Member member = findMember(1L);
+        Member member = memberRepository.findById(1L)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
         List<Cart> carts = checkCarts(cartIds, member.getId());
         List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
         findItems(itemIds);
@@ -97,15 +98,11 @@ public class OrderServiceImpl {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new IllegalArgumentException("주문이 존재하지 않습니다."));
         order.updateOrderStatus(CANCELED);
-    }
 
-    /**
-     * 회원 조회
-     * @param memberId
-     */
-    private Member findMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
+        List<Long> itemIds = orderItems.stream().map(OrderItem -> OrderItem.getItemId()).collect(Collectors.toList());
+        findItems(itemIds);
+        checkItemAndAddStockByOrderItems(orderItems);
     }
 
     /**
@@ -113,7 +110,11 @@ public class OrderServiceImpl {
      * @param itemIds
      */
     private List<Item> findItems(List<Long> itemIds) {
-        return itemRepository.findAllByIdInAndActivated(itemIds, true);
+        List<Item> item = itemRepository.findAllByIdInAndActivated(itemIds, true);
+        if (item.size() < 1) {
+            throw new IllegalArgumentException("재고 상품이 존재하지 않습니다.");
+        }
+        return item;
     }
 
     /**
@@ -132,12 +133,15 @@ public class OrderServiceImpl {
     }
 
     /**
-     * Cart 로 재고 차감
-     * @param item
-     * @param cart
+     * OrderItem 정보로 재고 체크 및 추가
+     * @param orderItems
      */
-    private void subtractStockByCart(Item item, Cart cart) {
-        item.subtractStock(cart.getItemUsedQuantity());
+    private void checkItemAndAddStockByOrderItems(List<OrderItem> orderItems) {
+        for (OrderItem orderItem : orderItems) {
+            Item item = itemRepository.findById(orderItem.getItemId())
+                    .orElseThrow(() -> new IllegalArgumentException("재고 상품이 존재하지 않습니다."));
+            item.addStock(orderItem.getItemUsedQuantity());
+        }
     }
 
     /**

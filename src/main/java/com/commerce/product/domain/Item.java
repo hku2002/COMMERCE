@@ -62,4 +62,9 @@ public class Item extends BaseEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void addStock(int stockQuantity) {
+        this.stockQuantity += stockQuantity;
+        this.updatedAt = LocalDateTime.now();
+    }
+
 }
