@@ -5,6 +5,7 @@ import com.commerce.cart.dto.AddCartRequestDto;
 import com.commerce.cart.dto.CartResponseDto;
 import com.commerce.cart.repositiry.CartRepository;
 import com.commerce.global.common.dto.PagingCommonRequestDto;
+import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.product.domain.Item;
 import com.commerce.product.domain.ItemProductMapping;
 import com.commerce.product.domain.Option;
@@ -85,10 +86,10 @@ public class CartServiceImpl {
     private Item checkItem(Long itemId) {
         Item item = itemRepository.findByIdAndActivated(itemId, true);
         if (ObjectUtils.isEmpty(item)) {
-            throw new IllegalArgumentException("해당 아이템이 존재하지 않습니다.");
+            throw new BadRequestException("해당 아이템이 존재하지 않습니다.");
         }
         if (item.getStockQuantity() < 1) {
-            throw new IllegalArgumentException("해당 상품은 품절되었습니다.");
+            throw new BadRequestException("해당 상품은 품절되었습니다.");
         }
         return item;
     }
@@ -101,7 +102,7 @@ public class CartServiceImpl {
     private ItemProductMapping findItemProductMapping(Long itemId, Long productId) {
         ItemProductMapping itemProductMapping = itemProductMappingRepository.findTop1ByItemIdAndProductIdAndActivated(itemId, productId, true);
         if (ObjectUtils.isEmpty(itemProductMapping)) {
-            throw new IllegalArgumentException("해당 아이템과 상품의 매핑 정보가 존재하지 않습니다.");
+            throw new BadRequestException("해당 아이템과 상품의 매핑 정보가 존재하지 않습니다.");
         }
         return itemProductMapping;
     }
@@ -112,7 +113,7 @@ public class CartServiceImpl {
      */
     private Product findProduct(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 상품이 없습니다."));
+                .orElseThrow(() -> new BadRequestException("해당 상품이 없습니다."));
     }
 
     /**
@@ -122,7 +123,7 @@ public class CartServiceImpl {
     private Cart findCart(Long cartId) {
         Cart cart = cartRepository.findByIdAndMemberId(cartId, 1L);
         if (ObjectUtils.isEmpty(cart)) {
-            throw new IllegalArgumentException("해당 장바구니가 존재하지 않습니다.");
+            throw new BadRequestException("해당 장바구니가 존재하지 않습니다.");
         }
         return cart;
     }
@@ -143,7 +144,7 @@ public class CartServiceImpl {
     private Option findOption(Long optionId) {
         Option option = optionRepository.findTop1ByIdAndActivated(optionId, true);
         if (ObjectUtils.isEmpty(option)) {
-            throw new IllegalArgumentException("해당 옵션이 존재하지 않습니다.");
+            throw new BadRequestException("해당 옵션이 존재하지 않습니다.");
         }
         return option;
     }

@@ -4,6 +4,7 @@ import com.commerce.cart.domain.Cart;
 import com.commerce.cart.repositiry.CartRepository;
 import com.commerce.delivery.domain.Delivery;
 import com.commerce.delivery.repository.DeliveryRepository;
+import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.order.domain.Order;
 import com.commerce.order.domain.OrderItem;
 import com.commerce.order.dto.OrderResponseDto;
@@ -56,7 +57,7 @@ public class OrderServiceImpl {
     @Transactional
     public void addOrder(List<Long> cartIds) {
         Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+                .orElseThrow(() -> new BadRequestException("회원이 존재하지 않습니다."));
         List<Cart> carts = checkCarts(cartIds, member.getId());
         List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
         findItems(itemIds);
@@ -98,7 +99,7 @@ public class OrderServiceImpl {
     public void cancelOrder(Long orderId) {
         Order order = orderRepository.findWithDeliveryByOrderId(orderId);
         if (ObjectUtils.isEmpty(order)) {
-            throw new IllegalArgumentException("주문이 존재하지 않습니다.");
+            throw new BadRequestException("주문이 존재하지 않습니다.");
         }
         checkDelivery(order);
         order.updateOrderStatus(CANCELED);
@@ -116,7 +117,7 @@ public class OrderServiceImpl {
     private List<Item> findItems(List<Long> itemIds) {
         List<Item> item = itemRepository.findAllByIdInAndActivated(itemIds, true);
         if (item.size() < 1) {
-            throw new IllegalArgumentException("재고 상품이 존재하지 않습니다.");
+            throw new BadRequestException("재고 상품이 존재하지 않습니다.");
         }
         return item;
     }
@@ -128,9 +129,9 @@ public class OrderServiceImpl {
     private void checkItemStockAndSubtractStockByCarts(List<Cart> carts) {
         for (Cart cart : carts) {
             Item item = itemRepository.findById(cart.getItem().getId())
-                    .orElseThrow(() -> new IllegalArgumentException("재고 상품이 존재하지 않습니다."));
+                    .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
             if (item.getStockQuantity() < cart.getItemUsedQuantity()) {
-                throw new IllegalArgumentException("재고가 부족합니다.");
+                throw new BadRequestException("재고가 부족합니다.");
             }
             item.subtractStock(cart.getItemUsedQuantity());
         }
@@ -143,7 +144,7 @@ public class OrderServiceImpl {
     private void checkItemAndAddStockByOrderItems(List<OrderItem> orderItems) {
         for (OrderItem orderItem : orderItems) {
             Item item = itemRepository.findById(orderItem.getItemId())
-                    .orElseThrow(() -> new IllegalArgumentException("재고 상품이 존재하지 않습니다."));
+                    .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
             item.addStock(orderItem.getItemUsedQuantity());
         }
     }
@@ -153,10 +154,10 @@ public class OrderServiceImpl {
      */
     private void checkDelivery(Order order) {
         if (ObjectUtils.isEmpty(order.getDelivery())) {
-            throw new IllegalArgumentException("배송이 존재하지 않습니다.");
+            throw new BadRequestException("배송이 존재하지 않습니다.");
         }
         if (order.getDelivery().getStatus() != STAND_BY) {
-            throw new IllegalArgumentException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
+            throw new BadRequestException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
         }
     }
 
@@ -167,7 +168,7 @@ public class OrderServiceImpl {
     private List<Cart> checkCarts(List<Long> cartIds, Long memberId) {
         List<Cart> carts = cartRepository.findWithOptionAndItem(cartIds, memberId);
         if (carts.size() != cartIds.size()) {
-            throw new IllegalArgumentException("잘못된 장바구니 아이디입니다.");
+            throw new BadRequestException("잘못된 장바구니 아이디입니다.");
         }
         return carts;
     }
