@@ -25,7 +25,7 @@ insert into option (id, product_id, item_id, item_product_mapping_id, name, stag
 insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (8, 2, 6, 1, '노랑티', 2, 6, 1, true, now());
 
 insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (9, 3, 7, 1, '3개 세트', 1, null, 3, true, now());
-insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (10, 3, 8, 1, '10개 세트', 1, null, 10, true, now());
+insert into option (id, product_id, item_id, item_product_mapping_id, name, stage, parent_id, item_used_quantity, activated, created_at) values (10, 3, 7, 1, '10개 세트', 1, null, 10, true, now());
 
 insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (1, 1, 1, 1, true, now());
 insert into item_product_mapping (id, item_id, product_id, item_used_quantity, activated, created_at) values (2, 2, 1, 1, true, now());
