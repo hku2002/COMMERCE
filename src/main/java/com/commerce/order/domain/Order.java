@@ -1,9 +1,9 @@
 package com.commerce.order.domain;
 
 import com.commerce.delivery.domain.Delivery;
+import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
 import com.commerce.user.domain.Member;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -26,7 +25,7 @@ import static lombok.AccessLevel.PROTECTED;
 @DynamicUpdate
 @Table(name = "ORDERS")
 @NoArgsConstructor(access = PROTECTED)
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -54,10 +53,6 @@ public class Order {
     @Column(name = "total_price", nullable = false)
     private int totalPrice;
 
-    @JsonFormat(shape = STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime orderDateTime;
-
     @Builder
     public Order (Long id, Member member, Delivery delivery, List<OrderItem> orderItems, String name, int totalPrice) {
         this.id = id;
@@ -67,11 +62,11 @@ public class Order {
         this.name = name;
         this.status = OrderStatus.COMPLETED;
         this.totalPrice = totalPrice;
-        this.orderDateTime = LocalDateTime.now();
     }
 
     public void updateOrderStatus(OrderStatus status) {
         this.status = status;
+        this.updatedAt = LocalDateTime.now();
     }
 
     public enum OrderStatus implements IEnumType {
