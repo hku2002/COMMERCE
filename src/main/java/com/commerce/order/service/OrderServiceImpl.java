@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.commerce.delivery.domain.Delivery.DeliveryStatus.STAND_BY;
+import static com.commerce.order.domain.Order.OrderStatus.CANCELED;
 
 @Service
 @RequiredArgsConstructor
@@ -78,8 +79,13 @@ public class OrderServiceImpl {
 
     /**
      * 주문 취소
+     * @param orderId
      */
-    public void cancelOrder() {
+    @Transactional
+    public void cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new IllegalArgumentException("주문이 존재하지 않습니다."));
+        order.updateOrderStatus(CANCELED);
     }
 
     /**

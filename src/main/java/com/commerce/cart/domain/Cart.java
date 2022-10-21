@@ -8,6 +8,7 @@ import com.commerce.user.domain.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,6 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@DynamicUpdate
 @Table(name = "CART")
 @NoArgsConstructor(access = PROTECTED)
 public class Cart extends BaseEntity {

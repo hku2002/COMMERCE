@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,6 +23,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@DynamicUpdate
 @Table(name = "ORDERS")
 @NoArgsConstructor(access = PROTECTED)
 public class Order {
@@ -66,6 +68,10 @@ public class Order {
         this.status = OrderStatus.COMPLETED;
         this.totalPrice = totalPrice;
         this.orderDateTime = LocalDateTime.now();
+    }
+
+    public void updateOrderStatus(OrderStatus status) {
+        this.status = status;
     }
 
     public enum OrderStatus implements IEnumType {
