@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,8 +96,11 @@ public class OrderServiceImpl {
      */
     @Transactional
     public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("주문이 존재하지 않습니다."));
+        Order order = orderRepository.findWithDeliveryByOrderId(orderId);
+        if (ObjectUtils.isEmpty(order)) {
+            throw new IllegalArgumentException("주문이 존재하지 않습니다.");
+        }
+        checkDelivery(order);
         order.updateOrderStatus(CANCELED);
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
@@ -141,6 +145,18 @@ public class OrderServiceImpl {
             Item item = itemRepository.findById(orderItem.getItemId())
                     .orElseThrow(() -> new IllegalArgumentException("재고 상품이 존재하지 않습니다."));
             item.addStock(orderItem.getItemUsedQuantity());
+        }
+    }
+
+    /**
+     * 배송 상태값 체크 및 주문 취소여부 확인
+     */
+    private void checkDelivery(Order order) {
+        if (ObjectUtils.isEmpty(order.getDelivery())) {
+            throw new IllegalArgumentException("배송이 존재하지 않습니다.");
+        }
+        if (order.getDelivery().getStatus() != STAND_BY) {
+            throw new IllegalArgumentException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
         }
     }
 
