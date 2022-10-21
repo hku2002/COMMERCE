@@ -46,7 +46,7 @@ public class OrderServiceImpl {
      * @param memberId
      */
     public List<OrderResponseDto> findOrders(Long memberId, int limit, int offset) {
-        return orderRepository.findWithMemberAndDeliveryByUserId(memberId, PageRequest.of(limit, offset))
+        return orderRepository.findWithMemberAndDeliveryByMemberId(memberId, PageRequest.of(limit, offset))
                 .stream().map(OrderResponseDto::new).collect(Collectors.toList());
     }
 
