@@ -10,6 +10,7 @@ import com.commerce.order.dto.OrderResponseDto;
 import com.commerce.order.repository.OrderItemRepository;
 import com.commerce.order.repository.OrderRepository;
 import com.commerce.user.domain.Member;
+import com.commerce.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class OrderServiceImpl {
     private final OrderItemRepository orderItemRepository;
     private final CartRepository cartRepository;
     private final DeliveryRepository deliveryRepository;
+    private final MemberRepository memberRepository;
 
     /**
      * 주문 목록 조회
@@ -47,8 +49,8 @@ public class OrderServiceImpl {
      */
     @Transactional
     public void addOrder(List<Long> cartIds) {
-        List<Cart> carts = checkCarts(cartIds);
-        Member member = Member.builder().id(1L).build();
+        Member member = findMember(1L);
+        List<Cart> carts = checkCarts(cartIds, member.getId());
         Order order = orderRepository.save(
                 Order.builder()
                 .member(member)
@@ -89,11 +91,20 @@ public class OrderServiceImpl {
     }
 
     /**
+     * 회원 조회
+     * @param memberId
+     */
+    private Member findMember(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+    }
+
+    /**
      * 장바구니 목록 조회
      * @param cartIds
      */
-    private List<Cart> checkCarts(List<Long> cartIds) {
-        List<Cart> carts = cartRepository.findWithOptionAndItem(cartIds);
+    private List<Cart> checkCarts(List<Long> cartIds, Long memberId) {
+        List<Cart> carts = cartRepository.findWithOptionAndItem(cartIds, memberId);
         if (carts.size() != cartIds.size()) {
             throw new IllegalArgumentException("잘못된 장바구니 아이디입니다.");
         }

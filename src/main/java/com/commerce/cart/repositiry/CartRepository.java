@@ -28,6 +28,7 @@ public interface CartRepository extends JpaRepository<Cart, Long> {
            "join fetch c.item " +
            "join fetch c.product " +
            "where c.id in :cartIds " +
+           "and c.member.id = :memberId " +
            "and c.activated = true")
-    List<Cart> findWithOptionAndItem(List<Long> cartIds);
+    List<Cart> findWithOptionAndItem(List<Long> cartIds, Long memberId);
 }
