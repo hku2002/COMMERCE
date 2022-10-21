@@ -12,8 +12,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-import java.time.LocalDateTime;
-
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -40,6 +38,7 @@ public class Delivery extends BaseEntity {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 30)
     private DeliveryStatus status;
 
@@ -50,8 +49,6 @@ public class Delivery extends BaseEntity {
         this.order = order;
         this.address = address;
         this.status = status;
-        this.activated = true;
-        this.createdAt = LocalDateTime.now();
     }
 
     public enum DeliveryStatus implements IEnumType {
