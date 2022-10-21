@@ -58,7 +58,7 @@ public class Item extends BaseEntity {
     }
 
     public void subtractStock(int stockQuantity) {
-        this.stockQuantity = this.stockQuantity - stockQuantity;
+        this.stockQuantity -= stockQuantity;
         this.updatedAt = LocalDateTime.now();
     }
 
