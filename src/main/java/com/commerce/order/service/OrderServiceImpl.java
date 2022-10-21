@@ -43,10 +43,10 @@ public class OrderServiceImpl {
 
     /**
      * 주문 목록 조회
-     * @param userId
+     * @param memberId
      */
-    public List<OrderResponseDto> findOrders(Long userId, int limit, int offset) {
-        return orderRepository.findWithOrderProductsAndDeliveryByUserId(userId, PageRequest.of(limit, offset))
+    public List<OrderResponseDto> findOrders(Long memberId, int limit, int offset) {
+        return orderRepository.findWithMemberAndDeliveryByUserId(memberId, PageRequest.of(limit, offset))
                 .stream().map(OrderResponseDto::new).collect(Collectors.toList());
     }
 
