@@ -1,6 +1,7 @@
 package com.commerce.user.service;
 
 import com.commerce.global.common.Address;
+import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.domain.Member;
 import com.commerce.user.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
@@ -127,9 +128,9 @@ class MemberServiceImplTest {
                 .build();
 
         // when
-        Long memberId = memberService.join(member);
+        memberService.join(member);
 
         // then
-        assertThrows(IllegalStateException.class, () -> memberService.findOne("emptyId"));
+        assertThrows(BadRequestException.class, () -> memberService.findOne("emptyId"));
     }
 }
