@@ -29,8 +29,9 @@ public class Option extends BaseEntity {
     @Column(name = "product_id", nullable = false)
     private Long productId;
 
-    @Column(name = "item_id", nullable = false)
-    private Long itemId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "itemId", updatable = false)
+    private Item item;
 
     @Column(name = "item_product_mapping_id", nullable = false)
     private Long itemProductMappingId;
@@ -48,11 +49,11 @@ public class Option extends BaseEntity {
     private int itemUsedQuantity;
 
     @Builder
-    public Option(Long id, List<OptionCartMapping> optionCartMappings, Long productId, Long itemId, Long itemProductMappingId, String name, int stage, Long parentId, int itemUsedQuantity) {
+    public Option(Long id, List<OptionCartMapping> optionCartMappings, Long productId, Item item, Long itemProductMappingId, String name, int stage, Long parentId, int itemUsedQuantity) {
         this.id = id;
         this.optionCartMappings = optionCartMappings;
         this.productId = productId;
-        this.itemId = itemId;
+        this.item = item;
         this.itemProductMappingId = itemProductMappingId;
         this.name = name;
         this.stage = stage;

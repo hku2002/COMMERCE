@@ -54,6 +54,6 @@ public class ProductServiceImpl {
      * @param productId
      */
     private List<OptionVo> findOptions(Long productId) {
-        return optionRepository.findByProductIdAndActivated(productId, true).stream().map(OptionVo::new).collect(Collectors.toList());
+        return optionRepository.findWithItemByProductIdAndActivated(productId, true).stream().map(OptionVo::new).collect(Collectors.toList());
     }
 }
