@@ -93,7 +93,7 @@ class MemberServiceImplTest {
                 .email("gildong@commerce.com")
                 .phoneNumber("01012341234")
                 .address(address)
-                .active(true)
+                .activated(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -121,7 +121,7 @@ class MemberServiceImplTest {
                 .email("gildong@commerce.com")
                 .phoneNumber("01012341234")
                 .address(address)
-                .active(true)
+                .activated(true)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
