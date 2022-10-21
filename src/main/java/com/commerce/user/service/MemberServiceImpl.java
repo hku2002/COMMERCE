@@ -1,5 +1,6 @@
 package com.commerce.user.service;
 
+import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.domain.Member;
 import com.commerce.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +33,7 @@ public class MemberServiceImpl {
     public Member findOne(String userId) {
         Member member = memberRepository.findByUserId(userId);
         if (ObjectUtils.isEmpty(member)) {
-            throw new IllegalStateException("존재하지 않는 회원입니다.");
+            throw new BadRequestException("존재하지 않는 회원입니다.");
         }
 
         return member;
@@ -44,7 +45,7 @@ public class MemberServiceImpl {
      */
     private void validateDuplicateMember(Member member) {
         if (!ObjectUtils.isEmpty(memberRepository.findByUserId(member.getUserId()))) {
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
+            throw new BadRequestException("이미 존재하는 회원입니다.");
         }
     }
 }
