@@ -9,9 +9,12 @@ import com.commerce.order.domain.OrderItem;
 import com.commerce.order.dto.OrderResponseDto;
 import com.commerce.order.repository.OrderItemRepository;
 import com.commerce.order.repository.OrderRepository;
+import com.commerce.product.domain.Item;
+import com.commerce.product.repository.ItemRepository;
 import com.commerce.user.domain.Member;
 import com.commerce.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 import static com.commerce.delivery.domain.Delivery.DeliveryStatus.STAND_BY;
 import static com.commerce.order.domain.Order.OrderStatus.CANCELED;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -33,6 +37,7 @@ public class OrderServiceImpl {
     private final CartRepository cartRepository;
     private final DeliveryRepository deliveryRepository;
     private final MemberRepository memberRepository;
+    private final ItemRepository itemRepository;
 
     /**
      * 주문 목록 조회
@@ -51,6 +56,10 @@ public class OrderServiceImpl {
     public void addOrder(List<Long> cartIds) {
         Member member = findMember(1L);
         List<Cart> carts = checkCarts(cartIds, member.getId());
+        List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
+        findItems(itemIds);
+        checkItemStockAndSubtractStockByCarts(carts);
+
         Order order = orderRepository.save(
                 Order.builder()
                 .member(member)
@@ -97,6 +106,38 @@ public class OrderServiceImpl {
     private Member findMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+    }
+
+    /**
+     * item 목록 조회
+     * @param itemIds
+     */
+    private List<Item> findItems(List<Long> itemIds) {
+        return itemRepository.findAllByIdInAndActivated(itemIds, true);
+    }
+
+    /**
+     * Cart 정보로 Item 재고 체크 및 차감
+     * @param carts
+     */
+    private void checkItemStockAndSubtractStockByCarts(List<Cart> carts) {
+        for (Cart cart : carts) {
+            Item item = itemRepository.findById(cart.getItem().getId())
+                    .orElseThrow(() -> new IllegalArgumentException("재고 상품이 존재하지 않습니다."));
+            if (item.getStockQuantity() < cart.getItemUsedQuantity()) {
+                throw new IllegalArgumentException("재고가 부족합니다.");
+            }
+            item.subtractStock(cart.getItemUsedQuantity());
+        }
+    }
+
+    /**
+     * Cart 로 재고 차감
+     * @param item
+     * @param cart
+     */
+    private void subtractStockByCart(Item item, Cart cart) {
+        item.subtractStock(cart.getItemUsedQuantity());
     }
 
     /**

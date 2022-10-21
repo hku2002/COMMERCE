@@ -5,8 +5,10 @@ import com.commerce.global.common.Price;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @Entity
+@DynamicUpdate
 @Table(name = "ITEM")
 @NoArgsConstructor(access = PROTECTED)
 public class Item extends BaseEntity {
@@ -52,6 +55,11 @@ public class Item extends BaseEntity {
         this.supplyPrice = supplyPrice;
         this.stockQuantity = stockQuantity;
         this.productProductMappings = productProductMappings;
+    }
+
+    public void subtractStock(int stockQuantity) {
+        this.stockQuantity = this.stockQuantity - stockQuantity;
+        this.updatedAt = LocalDateTime.now();
     }
 
 }
