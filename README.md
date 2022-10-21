@@ -58,4 +58,4 @@
 ---
 
 ### ERD
-[ERD 링크](https://dbdiagram.io/d/6342ae8ff0018a1c5fc4fdc6)
+[ERD 링크](https://dbdiagram.io/d/6342ae8ff0018a1c5fc4fdc6){:target="_blank"}
