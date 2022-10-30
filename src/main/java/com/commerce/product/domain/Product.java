@@ -51,7 +51,7 @@ public class Product extends BaseEntity {
     private List<ItemProductMapping> itemProductMappings = new ArrayList<>();
 
     @Builder
-    public void Product(long id, String name, String imgPath, Price price, DisplayStatus status, CompositionType compositionType, Long mainItemId) {
+    public Product(Long id, String name, String imgPath, Price price, DisplayStatus status, CompositionType compositionType, Long mainItemId) {
         this.id = id;
         this.name = name;
         this.imgPath = imgPath;
