@@ -1,6 +1,6 @@
 package com.commerce.global.common.token;
 
-import com.commerce.global.common.exception.InvalidJwtAuthenticationException;
+import com.commerce.global.common.exception.InvalidTokenAuthenticationException;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -73,13 +73,13 @@ public class JwtTokenManager implements InitializingBean {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (SecurityException | MalformedJwtException e) {
-            throw new InvalidJwtAuthenticationException("잘못된 JWT 서명입니다.");
+            throw new InvalidTokenAuthenticationException("잘못된 JWT 서명입니다.");
         } catch (UnsupportedJwtException e) {
-            throw new InvalidJwtAuthenticationException("지원하지 않는 JWT 토큰입니다.");
+            throw new InvalidTokenAuthenticationException("지원하지 않는 JWT 토큰입니다.");
         } catch (IllegalIdentifierException e) {
-            throw new InvalidJwtAuthenticationException("잘못된 JWT 토큰입니다.");
+            throw new InvalidTokenAuthenticationException("잘못된 JWT 토큰입니다.");
         } catch (ExpiredJwtException e) {
-            throw new InvalidJwtAuthenticationException("만료된 JWT 토큰입니다.");
+            throw new InvalidTokenAuthenticationException("만료된 JWT 토큰입니다.");
         }
     }
 }

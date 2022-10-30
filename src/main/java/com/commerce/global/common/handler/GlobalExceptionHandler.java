@@ -1,7 +1,8 @@
-package com.commerce.global.common.exception.handler;
+package com.commerce.global.common.handler;
 
 import com.commerce.global.common.dto.ErrorResponseDto;
 import com.commerce.global.common.exception.BadRequestException;
+import com.commerce.global.common.exception.InvalidTokenAuthenticationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -18,7 +19,7 @@ public class GlobalExceptionHandler {
      * @param e
      */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e) {
+    public ResponseEntity<ErrorResponseDto> handleException(Exception e) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(INTERNAL_SERVER_ERROR, e.getMessage()));
     }
 
@@ -27,7 +28,7 @@ public class GlobalExceptionHandler {
      * @param e
      */
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<?> handleRuntimeException(RuntimeException e) {
+    public ResponseEntity<ErrorResponseDto> handleRuntimeException(RuntimeException e) {
         return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(INTERNAL_SERVER_ERROR, e.getMessage()));
     }
 
@@ -46,6 +47,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(BadRequestException.class)
     protected ResponseEntity<ErrorResponseDto> handleBadRequestException(BadRequestException e) {
+        return ResponseEntity.status(e.getStatus()).body(new ErrorResponseDto(e.getStatus(), e.getMessage()));
+    }
+
+    /**
+     * InvalidTokenAuthenticationException Handler (사용자 정의 Exception, 토큰이 잘못되었을 경우 처리)
+     * @param e
+     */
+    @ExceptionHandler(InvalidTokenAuthenticationException.class)
+    protected ResponseEntity<ErrorResponseDto> handleInvalidTokenAuthenticationException(InvalidTokenAuthenticationException e) {
         return ResponseEntity.status(e.getStatus()).body(new ErrorResponseDto(e.getStatus(), e.getMessage()));
     }
 
