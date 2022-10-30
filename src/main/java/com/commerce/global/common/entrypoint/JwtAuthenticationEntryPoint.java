@@ -20,7 +20,6 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
         Map<String, Object> body = new HashMap<>();
-        body.put("path", request.getRequestURI());
         body.put("message", UNAUTHORIZED_MESSAGE);
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
