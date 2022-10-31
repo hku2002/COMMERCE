@@ -14,13 +14,15 @@ import static com.commerce.global.common.constants.ErrorStatusCode.METHOD_NOT_AL
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final String DEFAULT_MESSAGE = "서버에서 오류가 발생하였습니다.";
+
     /**
      * Exception Handler
      * @param e
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleException(Exception e) {
-        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(INTERNAL_SERVER_ERROR, e.getMessage()));
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(INTERNAL_SERVER_ERROR, DEFAULT_MESSAGE));
     }
 
     /**
@@ -29,7 +31,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponseDto> handleRuntimeException(RuntimeException e) {
-        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(INTERNAL_SERVER_ERROR, e.getMessage()));
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).body(new ErrorResponseDto(INTERNAL_SERVER_ERROR, DEFAULT_MESSAGE));
     }
 
     /**
