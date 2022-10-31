@@ -47,7 +47,7 @@ class MemberServiceImplTest {
         memberService.join(member);
 
         // then
-        assertEquals(member.getUserId(), memberRepository.findByUserId("testId").getUserId());
+        assertEquals(member.getUserId(), memberRepository.findByUserIdAndActivated("testId", true).getUserId());
     }
 
     @Test

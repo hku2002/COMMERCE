@@ -21,13 +21,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+import static com.commerce.global.common.constants.CommonConstants.REFRESH_TOKEN_TIME;
+
 @Component
 public class JwtTokenManager implements InitializingBean {
 
     private static final String AUTHORITIES_KEY = "auth";
     private final String secret;
     private final long tokenValidInSeconds;
-    private final long REFRESH_TOKEN_TIME = 1000L * 60 * 60 * 24 * 7; // 7일
     private Key key;
 
     public JwtTokenManager(@Value("${jwt.secret}") String secret, @Value("${jwt.token-validity-in-seconds}") long tokenValidInSeconds) {
@@ -41,12 +42,12 @@ public class JwtTokenManager implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public String createAccessToken(Authentication authentication) {
-        return generateToken(authentication, getAuthorities(authentication), tokenValidInSeconds);
+    public String createAccessToken(Authentication authentication, String userId) {
+        return generateToken(authentication, userId, getAuthorities(authentication), tokenValidInSeconds);
     }
     
-    public String createRefreshToken(Authentication authentication) {
-        return generateToken(authentication, getAuthorities(authentication), REFRESH_TOKEN_TIME);
+    public String createRefreshToken(Authentication authentication, String userId) {
+        return generateToken(authentication, userId, getAuthorities(authentication), REFRESH_TOKEN_TIME);
     }
 
     public Authentication getAuthentication(String token) {
@@ -86,10 +87,11 @@ public class JwtTokenManager implements InitializingBean {
                 .collect(Collectors.joining());
     }
 
-    private String generateToken(Authentication authentication, String authorities, long expirationTime) {
+    private String generateToken(Authentication authentication, String userId, String authorities, long expirationTime) {
         return Jwts.builder()
                 .setSubject(authentication.getName())
                 .claim(AUTHORITIES_KEY, authorities)
+                .claim("userId", userId)
                 .signWith(key, SignatureAlgorithm.HS512)
                 .setExpiration(new Date((new Date()).getTime() + expirationTime))
                 .setIssuedAt(new Date())

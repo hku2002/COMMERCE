@@ -7,14 +7,14 @@ import lombok.Getter;
 public class LoginResponseDto {
     private String accessToken;
     private String refreshToken;
-    private Long memberId;
+    private String userId;
     private String username;
 
     @Builder
-    public LoginResponseDto(String accessToken, String refreshToken, Long memberId, String username) {
+    public LoginResponseDto(String accessToken, String refreshToken, String userId, String username) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.memberId = memberId;
+        this.userId = userId;
         this.username = username;
     }
 }

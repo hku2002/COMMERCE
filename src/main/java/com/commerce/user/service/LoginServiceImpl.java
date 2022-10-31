@@ -1,22 +1,25 @@
 package com.commerce.user.service;
 
-import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
-import com.commerce.user.domain.Member;
 import com.commerce.user.domain.RefreshToken;
 import com.commerce.user.dto.LoginDto;
 import com.commerce.user.dto.LoginResponseDto;
 import com.commerce.user.repository.MemberRepository;
 import com.commerce.user.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
-import static com.commerce.global.common.util.CryptoUtils.matches;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+
+import static com.commerce.global.common.constants.CommonConstants.REFRESH_TOKEN_TIME;
 
 
 @Service
@@ -35,44 +38,34 @@ public class LoginServiceImpl {
      */
     @Transactional
     public LoginResponseDto login(final LoginDto loginDto) {
-        Member member = validationUser(loginDto);
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(member.getId(), member.getUserId());
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(loginDto.getUserId(), loginDto.getPassword());
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        final String accessToken = jwtTokenManager.createAccessToken(authentication);
-        final String refreshToken = jwtTokenManager.createRefreshToken(authentication);
-        saveRefreshToken(member, refreshToken);
+        final String accessToken = jwtTokenManager.createAccessToken(authentication, loginDto.getUserId());
+        final String refreshToken = jwtTokenManager.createRefreshToken(authentication, loginDto.getUserId());
+        saveRefreshToken(loginDto.getUserId(), refreshToken);
+        setAuthorizationHeader(accessToken);
 
         return LoginResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .memberId(member.getId())
-                .username(member.getUsername())
+                .userId(loginDto.getUserId())
+                .username(authentication.getName())
                 .build();
-
     }
 
-    /**
-     * 사용자 정보 유효성 검사
-     * @param loginDto
-     */
-    private Member validationUser(LoginDto loginDto) {
-        final Member member = memberRepository.findByUserIdAndActivated(loginDto.getUserId(), true);
-        if (ObjectUtils.isEmpty(member)) {
-            throw new BadRequestException("존재하지 않는 아이디입니다.");
-        }
-
-        if (!matches(loginDto.getPassword(), member.getPassword())) {
-            throw new BadRequestException("비밀번호가 일치하지 않습니다.");
-        }
-
-        return member;
-    }
-
-    private void saveRefreshToken(Member member, String refreshToken) {
+    private void saveRefreshToken(String userId, String refreshToken) {
         refreshTokenRepository.save(RefreshToken.builder()
-                .memberId(member.getId())
+                .userId(userId)
                 .refreshToken(refreshToken)
+                .expiredTime(LocalDateTime.ofInstant(Instant.ofEpochMilli(System.currentTimeMillis() + REFRESH_TOKEN_TIME)
+                , ZoneId.systemDefault()))
                 .build());
+    }
+
+    private void setAuthorizationHeader(String accessToken) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + accessToken);
     }
 }

@@ -16,22 +16,22 @@ public class RefreshToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "id", insertable = false, updatable = false)
     private Long id;
 
-    @Column(name = "member_id")
-    private Long memberId;
+    @Column(name = "user_id", nullable = false, length = 50)
+    private String userId;
 
-    @Column(name = "refresh_token")
+    @Column(name = "refresh_token", nullable = false, length = 228)
     private String refreshToken;
 
-    @Column(name = "expired_time")
+    @Column(name = "expired_time", updatable = false, nullable = false)
     private LocalDateTime expiredTime;
 
     @Builder
-    public RefreshToken(Long id, Long memberId, String refreshToken, LocalDateTime expiredTime) {
+    public RefreshToken(Long id, String userId, String refreshToken, LocalDateTime expiredTime) {
         this.id = id;
-        this.memberId = memberId;
+        this.userId = userId;
         this.refreshToken = refreshToken;
         this.expiredTime = expiredTime;
     }
