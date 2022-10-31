@@ -4,7 +4,6 @@ import com.commerce.global.common.token.JwtTokenManager;
 import com.commerce.user.domain.RefreshToken;
 import com.commerce.user.dto.LoginDto;
 import com.commerce.user.dto.LoginResponseDto;
-import com.commerce.user.repository.MemberRepository;
 import com.commerce.user.repository.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -28,7 +27,6 @@ import static com.commerce.global.common.constants.CommonConstants.REFRESH_TOKEN
 public class LoginServiceImpl {
 
     private final JwtTokenManager jwtTokenManager;
-    private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
