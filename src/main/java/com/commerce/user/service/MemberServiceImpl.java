@@ -31,7 +31,7 @@ public class MemberServiceImpl {
      * param userId
      */
     public Member findOne(String userId) {
-        Member member = memberRepository.findByUserId(userId);
+        Member member = memberRepository.findByUserIdAndActivated(userId, true);
         if (ObjectUtils.isEmpty(member)) {
             throw new BadRequestException("존재하지 않는 회원입니다.");
         }
@@ -44,7 +44,7 @@ public class MemberServiceImpl {
      * param member
      */
     private void validateDuplicateMember(Member member) {
-        if (!ObjectUtils.isEmpty(memberRepository.findByUserId(member.getUserId()))) {
+        if (!ObjectUtils.isEmpty(memberRepository.findByUserIdAndActivated(member.getUserId(), true))) {
             throw new BadRequestException("이미 존재하는 회원입니다.");
         }
     }
