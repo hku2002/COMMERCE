@@ -15,7 +15,6 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseAuth FirebaseInitializer() throws IOException {
-        System.out.println("bean test1");
         FirebaseOptions options = FirebaseOptions.builder()
                 .setCredentials(GoogleCredentials.fromStream(new FileInputStream("src/main/resources/firebaseAccountKey.json")))
                 .build();
