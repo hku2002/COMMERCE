@@ -1,6 +1,7 @@
 package com.commerce.global.common.handler;
 
 import com.commerce.global.common.dto.ErrorResponseDto;
+import com.commerce.global.common.exception.BadCredentialsCustomException;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.exception.InvalidTokenAuthenticationException;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,15 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(InvalidTokenAuthenticationException.class)
     protected ResponseEntity<ErrorResponseDto> handleInvalidTokenAuthenticationException(InvalidTokenAuthenticationException e) {
+        return ResponseEntity.status(e.getStatus()).body(new ErrorResponseDto(e.getStatus(), e.getMessage()));
+    }
+
+    /**
+     * BadCredentialsCustomException Handler (사용자 정의 Exception, 로그인 실패 처리)
+     * @param e
+     */
+    @ExceptionHandler(BadCredentialsCustomException.class)
+    protected ResponseEntity<ErrorResponseDto> handleInvalidTokenAuthenticationException(BadCredentialsCustomException e) {
         return ResponseEntity.status(e.getStatus()).body(new ErrorResponseDto(e.getStatus(), e.getMessage()));
     }
 

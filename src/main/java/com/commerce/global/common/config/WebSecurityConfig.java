@@ -4,6 +4,7 @@ import com.commerce.global.common.entrypoint.JwtAuthenticationEntryPoint;
 import com.commerce.global.common.filter.JwtTokenFilter;
 import com.commerce.global.common.handler.JwtAccessDeniedHandler;
 import com.commerce.global.common.token.JwtTokenManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtTokenManager jwtTokenManager;
@@ -23,16 +25,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    public WebSecurityConfig(JwtTokenManager jwtTokenManager
-            , JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint
-            , JwtTokenFilter jwtTokenFilter
-            , JwtAccessDeniedHandler jwtAccessDeniedHandler
-    ) {
-        this.jwtTokenManager = jwtTokenManager;
-        this.jwtTokenFilter = jwtTokenFilter;
-        this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
-    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -65,6 +57,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                         "/v1/cart/**").authenticated()
                 .anyRequest().permitAll()
                 .and()
+                .formLogin()
+                .disable()
                 .apply(new JwtSecurityConfig(jwtTokenManager));
     }
 }
