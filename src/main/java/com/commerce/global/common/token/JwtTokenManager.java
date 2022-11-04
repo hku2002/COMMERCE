@@ -37,13 +37,13 @@ public class JwtTokenManager implements InitializingBean {
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String createAccessToken(Authentication authentication, String userId) {
-        return generateToken(authentication, userId, getAuthorities(authentication), tokenValidInSeconds);
+        return generateToken(authentication, userId, getAuthorities(authentication), tokenValidInSeconds * 1000);
     }
     
     public String createRefreshToken(Authentication authentication, String userId) {

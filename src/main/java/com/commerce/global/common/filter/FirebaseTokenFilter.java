@@ -1,6 +1,9 @@
 package com.commerce.global.common.filter;
 
+import com.commerce.global.common.exception.InvalidTokenAuthenticationException;
 import com.commerce.global.common.token.JwtTokenManager;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -9,28 +12,31 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 import static com.commerce.global.common.constants.CommonConstants.*;
 
-@Order(2)
+@Order(1)
 @Component
 @RequiredArgsConstructor
-public class JwtTokenFilter extends OncePerRequestFilter {
+public class FirebaseTokenFilter extends OncePerRequestFilter {
 
+    private final FirebaseAuth firebaseAuth;
     private final JwtTokenManager jwtTokenManager;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = resolveToken(request);
-        if (StringUtils.hasText(jwt) && jwtTokenManager.validateToken(jwt)) {
-            SecurityContextHolder.getContext().setAuthentication(jwtTokenManager.getAuthentication(jwt));
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
+        String token = resolveToken(request);
+        try {
+            firebaseAuth.verifyIdToken(token);
+        } catch (FirebaseAuthException e) {
+            throw new InvalidTokenAuthenticationException("Invalid Firebase Token");
         }
 
-        filterChain.doFilter(request, response);
+        if (StringUtils.hasText(token) && jwtTokenManager.validateToken(token)) {
+            SecurityContextHolder.getContext().setAuthentication(jwtTokenManager.getAuthentication(token));
+        }
     }
 
     private String resolveToken(HttpServletRequest request) {
@@ -40,5 +46,4 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
         return null;
     }
-
 }
