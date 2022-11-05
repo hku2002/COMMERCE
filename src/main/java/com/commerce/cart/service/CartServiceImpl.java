@@ -40,7 +40,7 @@ public class CartServiceImpl {
      * @param requestDto
      */
     public List<CartResponseDto> findCarts(PagingCommonRequestDto requestDto) {
-        return cartRepository.findWithOptionAndProductAndItemByMemberId(1L, PageRequest.of(requestDto.getLimit(), requestDto.getOffset()))
+        return cartRepository.findCartsByMemberId(1L, PageRequest.of(requestDto.getLimit(), requestDto.getOffset()))
                 .stream().map(CartResponseDto::new).collect(Collectors.toList());
     }
 

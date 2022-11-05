@@ -166,7 +166,7 @@ public class OrderServiceImpl {
      * @param cartIds
      */
     private List<Cart> checkCarts(List<Long> cartIds, Long memberId) {
-        List<Cart> carts = cartRepository.findWithOptionAndItem(cartIds, memberId);
+        List<Cart> carts = cartRepository.findCartsByCartIdsAndMemberId(cartIds, memberId);
         if (carts.size() != cartIds.size()) {
             throw new BadRequestException("잘못된 장바구니 아이디입니다.");
         }
