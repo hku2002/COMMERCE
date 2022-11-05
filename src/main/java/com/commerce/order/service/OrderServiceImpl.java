@@ -155,8 +155,7 @@ public class OrderServiceImpl {
      * @param carts 장바구니 목록
      */
     private int calculateTotalPrice(List<Cart> carts) {
-        int totalPrice = carts.stream().mapToInt(cart -> cart.getItem().getPrice().getSalePrice()).sum();
-        return totalPrice;
+        return carts.stream().mapToInt(cart -> cart.getItem().getPrice().getSalePrice()).sum();
     }
 
     /**
@@ -220,16 +219,14 @@ public class OrderServiceImpl {
      * 주문 저장
      * @param member 회원 객체
      * @param carts 장바구니 목록
-     * @return
      */
     private Order saveOrder(Member member, List<Cart> carts) {
-        Order order = orderRepository.save(
+        return orderRepository.save(
                 Order.builder()
                         .member(member)
                         .name(createOrderName(carts))
                         .totalPrice(calculateTotalPrice(carts))
                         .build());
-        return order;
     }
 
 }
