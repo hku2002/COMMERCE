@@ -3,11 +3,12 @@ package com.commerce.cart.dto;
 import com.commerce.cart.domain.Cart;
 import com.commerce.global.common.Price;
 import com.commerce.product.domain.Product.DisplayStatus;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 public class CartResponseDto {
 
     private Long id;
@@ -20,15 +21,4 @@ public class CartResponseDto {
     private String imageUrl;
     private DisplayStatus status;
 
-    public CartResponseDto(Cart cart) {
-        id = cart.getId();
-        productId = cart.getProduct().getId();
-        itemId = cart.getItem().getId();
-        quantity = cart.getUserPurchaseQuantity();
-        productName = cart.getProduct().getName();
-        optionName = cart.getOption().getName();
-        price = cart.getItem().getPrice();
-        imageUrl = cart.getProduct().getImgPath();
-        status = cart.getProduct().getStatus();
-    }
 }

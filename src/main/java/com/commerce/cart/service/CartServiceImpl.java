@@ -21,8 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.commerce.product.domain.Product.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -40,8 +43,10 @@ public class CartServiceImpl {
      * @param requestDto
      */
     public List<CartResponseDto> findCarts(PagingCommonRequestDto requestDto) {
-        return cartRepository.findCartsByMemberId(1L, PageRequest.of(requestDto.getLimit(), requestDto.getOffset()))
-                .stream().map(CartResponseDto::new).collect(Collectors.toList());
+        List<Cart> carts = cartRepository.findCartsByMemberId(1L, PageRequest.of(requestDto.getLimit(), requestDto.getOffset()));
+        List<CartResponseDto> cartResponseDtos = new ArrayList<>();
+        setResponseDtos(carts, cartResponseDtos);
+        return cartResponseDtos;
     }
 
     /**
@@ -147,5 +152,39 @@ public class CartServiceImpl {
             throw new BadRequestException("해당 옵션이 존재하지 않습니다.");
         }
         return option;
+    }
+
+    /**
+     * responseDtos 에 데이터 셋팅
+     * @param carts
+     * @param cartResponseDtos
+     */
+    private void setResponseDtos(List<Cart> carts, List<CartResponseDto> cartResponseDtos) {
+        for (Cart cart : carts) {
+            DisplayStatus displayStatus = getDisplayStatus(cart);
+            cartResponseDtos.add(CartResponseDto.builder()
+                    .id(cart.getId())
+                    .productId(cart.getProduct().getId())
+                    .itemId(cart.getItem().getId())
+                    .quantity(cart.getUserPurchaseQuantity())
+                    .productName(cart.getProduct().getName())
+                    .price(cart.getItem().getPrice())
+                    .imageUrl(cart.getProduct().getImgPath())
+                    .status(displayStatus)
+                    .build());
+        }
+    }
+
+    /**
+     * 상품 전시 상태 확인
+     * @param cart
+     * @return
+     */
+    private DisplayStatus getDisplayStatus(Cart cart) {
+        DisplayStatus displayStatus = cart.getProduct().getStatus();
+        if (cart.getItem().getStockQuantity() < cart.getItemUsedQuantity()) {
+            displayStatus = DisplayStatus.SOLD_OUT;
+        }
+        return displayStatus;
     }
 }
