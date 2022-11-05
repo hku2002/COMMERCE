@@ -60,35 +60,11 @@ public class OrderServiceImpl {
                 .orElseThrow(() -> new BadRequestException("회원이 존재하지 않습니다."));
         List<Cart> carts = checkCarts(cartIds, member.getId());
         List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
-        findItems(itemIds);
+        checkItems(itemIds);
         checkItemStockAndSubtractStockByCarts(carts);
-
-        Order order = orderRepository.save(
-                Order.builder()
-                .member(member)
-                .name(createOrderName(carts))
-                .totalPrice(calculateTotalPrice(carts))
-                .build());
-
-        List<OrderItem> orderItems = new ArrayList<>();
-        carts.forEach(cart -> {
-            orderItems.add(OrderItem.builder()
-                    .order(order)
-                    .itemId(cart.getItem().getId())
-                    .price(cart.getItem().getPrice())
-                    .supplyPrice(cart.getItem().getSupplyPrice())
-                    .userPurchaseQuantity(cart.getUserPurchaseQuantity())
-                    .itemUsedQuantity(cart.getItemUsedQuantity())
-                    .build());
-            cart.updateActivated(false);
-        });
-        orderItemRepository.saveAll(orderItems);
-        deliveryRepository.save(Delivery.builder()
-                .member(member)
-                .order(order)
-                .address(member.getAddress())
-                .status(STAND_BY)
-                .build());
+        Order order = saveOrder(member, carts);
+        saveOrderItems(carts, order);
+        saveDelivery(member, order);
     }
 
     /**
@@ -107,20 +83,19 @@ public class OrderServiceImpl {
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
         List<Long> itemIds = orderItems.stream().map(OrderItem::getItemId).collect(Collectors.toList());
-        findItems(itemIds);
+        checkItems(itemIds);
         checkItemAndAddStockByOrderItems(orderItems);
     }
 
     /**
-     * item 목록 조회
+     * item 존재 체크
      * @param itemIds item id 목록
      */
-    private List<Item> findItems(List<Long> itemIds) {
+    private void checkItems(List<Long> itemIds) {
         List<Item> item = itemRepository.findAllByIdInAndActivated(itemIds, true);
         if (item.size() < 1) {
             throw new BadRequestException("재고 상품이 존재하지 않습니다.");
         }
-        return item;
     }
 
     /**
@@ -204,6 +179,57 @@ public class OrderServiceImpl {
         if (order.getStatus() == CANCELED) {
             throw new BadRequestException("이미 취소된 주문입니다.");
         }
+    }
+
+    /**
+     * 배송정보 저장
+     * @param member 회원 객체
+     * @param order 주문 객체
+     */
+    private void saveDelivery(Member member, Order order) {
+        deliveryRepository.save(Delivery.builder()
+                .member(member)
+                .order(order)
+                .address(member.getAddress())
+                .status(STAND_BY)
+                .build());
+    }
+
+    /**
+     * 주문 아이템 저장
+     * @param carts 장바구니 목록
+     * @param order 주문 객체
+     */
+    private void saveOrderItems(List<Cart> carts, Order order) {
+        List<OrderItem> orderItems = new ArrayList<>();
+        carts.forEach(cart -> {
+            orderItems.add(OrderItem.builder()
+                    .order(order)
+                    .itemId(cart.getItem().getId())
+                    .price(cart.getItem().getPrice())
+                    .supplyPrice(cart.getItem().getSupplyPrice())
+                    .userPurchaseQuantity(cart.getUserPurchaseQuantity())
+                    .itemUsedQuantity(cart.getItemUsedQuantity())
+                    .build());
+            cart.updateActivated(false);
+        });
+        orderItemRepository.saveAll(orderItems);
+    }
+
+    /**
+     * 주문 저장
+     * @param member 회원 객체
+     * @param carts 장바구니 목록
+     * @return
+     */
+    private Order saveOrder(Member member, List<Cart> carts) {
+        Order order = orderRepository.save(
+                Order.builder()
+                        .member(member)
+                        .name(createOrderName(carts))
+                        .totalPrice(calculateTotalPrice(carts))
+                        .build());
+        return order;
     }
 
 }
