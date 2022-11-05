@@ -43,7 +43,7 @@ public class OrderServiceImpl {
 
     /**
      * 주문 목록 조회
-     * @param memberId
+     * @param memberId 회원번호
      */
     public List<OrderResponseDto> findOrders(Long memberId, int limit, int offset) {
         return orderRepository.findWithMemberAndDeliveryByMemberId(memberId, PageRequest.of(limit, offset))
@@ -52,7 +52,7 @@ public class OrderServiceImpl {
 
     /**
      * 주문 추가 (주문 완료)
-     * @param cartIds
+     * @param cartIds 장바구니 아이디
      */
     @Transactional
     public void addOrder(List<Long> cartIds) {
@@ -93,7 +93,7 @@ public class OrderServiceImpl {
 
     /**
      * 주문 취소
-     * @param orderId
+     * @param orderId 주문번호
      */
     @Transactional
     public void cancelOrder(Long orderId) {
@@ -101,18 +101,19 @@ public class OrderServiceImpl {
         if (ObjectUtils.isEmpty(order)) {
             throw new BadRequestException("주문이 존재하지 않습니다.");
         }
+        checkOrderStatus(order);
         checkDelivery(order);
         order.updateOrderStatus(CANCELED);
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
-        List<Long> itemIds = orderItems.stream().map(OrderItem -> OrderItem.getItemId()).collect(Collectors.toList());
+        List<Long> itemIds = orderItems.stream().map(OrderItem::getItemId).collect(Collectors.toList());
         findItems(itemIds);
         checkItemAndAddStockByOrderItems(orderItems);
     }
 
     /**
      * item 목록 조회
-     * @param itemIds
+     * @param itemIds item id 목록
      */
     private List<Item> findItems(List<Long> itemIds) {
         List<Item> item = itemRepository.findAllByIdInAndActivated(itemIds, true);
@@ -124,7 +125,7 @@ public class OrderServiceImpl {
 
     /**
      * Cart 정보로 Item 재고 체크 및 차감
-     * @param carts
+     * @param carts 장바구니 목록
      */
     private void checkItemStockAndSubtractStockByCarts(List<Cart> carts) {
         for (Cart cart : carts) {
@@ -139,7 +140,7 @@ public class OrderServiceImpl {
 
     /**
      * OrderItem 정보로 재고 체크 및 추가
-     * @param orderItems
+     * @param orderItems orderItem 목록
      */
     private void checkItemAndAddStockByOrderItems(List<OrderItem> orderItems) {
         for (OrderItem orderItem : orderItems) {
@@ -151,6 +152,7 @@ public class OrderServiceImpl {
 
     /**
      * 배송 상태값 체크 및 주문 취소여부 확인
+     * @param order 주문 객체
      */
     private void checkDelivery(Order order) {
         if (ObjectUtils.isEmpty(order.getDelivery())) {
@@ -163,7 +165,7 @@ public class OrderServiceImpl {
 
     /**
      * 장바구니 목록 조회
-     * @param cartIds
+     * @param cartIds 장바구니 ID 목록
      */
     private List<Cart> checkCarts(List<Long> cartIds, Long memberId) {
         List<Cart> carts = cartRepository.findCartsByCartIdsAndMemberId(cartIds, memberId);
@@ -175,7 +177,7 @@ public class OrderServiceImpl {
 
     /**
      * 총 주문 가격 계산
-     * @param carts
+     * @param carts 장바구니 목록
      */
     private int calculateTotalPrice(List<Cart> carts) {
         int totalPrice = 0;
@@ -187,7 +189,7 @@ public class OrderServiceImpl {
 
     /**
      * 주문 상품 이름 생성
-     * @param carts
+     * @param carts 장바구니 목록
      */
     private String createOrderName(List<Cart> carts) {
         String name = carts.get(0).getProduct().getName();
@@ -195,6 +197,16 @@ public class OrderServiceImpl {
             name += " 외 " + (carts.size() - 1) + "건";
         }
         return name;
+    }
+
+    /**
+     * 주문 상태값 체크
+     * @param order 주문 객체
+     */
+    private void checkOrderStatus(Order order) {
+        if (order.getStatus() == CANCELED) {
+            throw new BadRequestException("이미 취소된 주문입니다.");
+        }
     }
 
 }
