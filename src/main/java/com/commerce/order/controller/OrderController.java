@@ -25,7 +25,7 @@ public class OrderController {
         return CommonResponse.setResponse();
     }
 
-    @PutMapping("/v1/order/{orderId}")
+    @DeleteMapping("/v1/order/{orderId}")
     public ResponseEntity<?> cancelOrder(@PathVariable Long orderId) {
         orderServiceImpl.cancelOrder(orderId);
         return CommonResponse.setResponse();
