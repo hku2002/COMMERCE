@@ -72,7 +72,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public FilterRegistrationBean firebaseTokenFilterRegistrationBean(FirebaseTokenFilter firebaseTokenFilter) {
-        System.out.println("bean test2");
         FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
         filterRegistrationBean.setFilter(firebaseTokenFilter);
         filterRegistrationBean.addUrlPatterns(FIREBASE_AUTH_URL);
