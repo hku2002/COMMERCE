@@ -160,7 +160,7 @@ public class CartServiceImpl {
      * @param cartResponseDtos
      */
     private void setResponseDtos(List<Cart> carts, List<CartResponseDto> cartResponseDtos) {
-        for (Cart cart : carts) {
+        carts.forEach(cart -> {
             DisplayStatus displayStatus = getDisplayStatus(cart);
             cartResponseDtos.add(CartResponseDto.builder()
                     .id(cart.getId())
@@ -172,7 +172,7 @@ public class CartServiceImpl {
                     .imageUrl(cart.getProduct().getImgPath())
                     .status(displayStatus)
                     .build());
-        }
+        });
     }
 
     /**

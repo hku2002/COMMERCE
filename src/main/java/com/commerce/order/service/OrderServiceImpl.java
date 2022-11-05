@@ -71,7 +71,7 @@ public class OrderServiceImpl {
                 .build());
 
         List<OrderItem> orderItems = new ArrayList<>();
-        for (Cart cart : carts) {
+        carts.forEach(cart -> {
             orderItems.add(OrderItem.builder()
                     .order(order)
                     .itemId(cart.getItem().getId())
@@ -81,7 +81,7 @@ public class OrderServiceImpl {
                     .itemUsedQuantity(cart.getItemUsedQuantity())
                     .build());
             cart.updateActivated(false);
-        }
+        });
         orderItemRepository.saveAll(orderItems);
         deliveryRepository.save(Delivery.builder()
                 .member(member)
@@ -128,14 +128,14 @@ public class OrderServiceImpl {
      * @param carts 장바구니 목록
      */
     private void checkItemStockAndSubtractStockByCarts(List<Cart> carts) {
-        for (Cart cart : carts) {
+        carts.forEach(cart -> {
             Item item = itemRepository.findById(cart.getItem().getId())
                     .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
             if (item.getStockQuantity() < cart.getItemUsedQuantity()) {
                 throw new BadRequestException("재고가 부족합니다.");
             }
             item.subtractStock(cart.getItemUsedQuantity());
-        }
+        });
     }
 
     /**
@@ -143,11 +143,11 @@ public class OrderServiceImpl {
      * @param orderItems orderItem 목록
      */
     private void checkItemAndAddStockByOrderItems(List<OrderItem> orderItems) {
-        for (OrderItem orderItem : orderItems) {
+        orderItems.forEach(orderItem -> {
             Item item = itemRepository.findById(orderItem.getItemId())
                     .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
             item.addStock(orderItem.getItemUsedQuantity());
-        }
+        });
     }
 
     /**
@@ -180,10 +180,7 @@ public class OrderServiceImpl {
      * @param carts 장바구니 목록
      */
     private int calculateTotalPrice(List<Cart> carts) {
-        int totalPrice = 0;
-        for (Cart cart : carts) {
-            totalPrice += cart.getItem().getPrice().getSalePrice();
-        }
+        int totalPrice = carts.stream().mapToInt(cart -> cart.getItem().getPrice().getSalePrice()).sum();
         return totalPrice;
     }
 
