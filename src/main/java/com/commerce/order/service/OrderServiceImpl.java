@@ -101,7 +101,7 @@ public class OrderServiceImpl {
         if (ObjectUtils.isEmpty(order)) {
             throw new BadRequestException("주문이 존재하지 않습니다.");
         }
-        checkOrderStatus(order);
+        checkCanceled(order);
         checkDelivery(order);
         order.updateOrderStatus(CANCELED);
 
@@ -200,10 +200,10 @@ public class OrderServiceImpl {
     }
 
     /**
-     * 주문 상태값 체크
+     * 주문 취소 체크
      * @param order 주문 객체
      */
-    private void checkOrderStatus(Order order) {
+    private void checkCanceled(Order order) {
         if (order.getStatus() == CANCELED) {
             throw new BadRequestException("이미 취소된 주문입니다.");
         }
