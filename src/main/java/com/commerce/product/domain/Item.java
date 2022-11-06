@@ -86,4 +86,14 @@ public class Item extends BaseEntity {
         }
     }
 
+    /**
+     * 재고 목록 크기가 0보다 큰지 체크
+     * @param items item 객체 목록
+     */
+    public static void checkItemSize(List<Item> items) {
+        if (items.size() < 1) {
+            throw new BadRequestException("재고 상품이 존재하지 않습니다.");
+        }
+    }
+
 }

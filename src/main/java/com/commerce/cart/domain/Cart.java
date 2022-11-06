@@ -1,6 +1,7 @@
 package com.commerce.cart.domain;
 
 import com.commerce.global.common.BaseEntity;
+import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.product.domain.Item;
 import com.commerce.product.domain.Option;
 import com.commerce.product.domain.Product;
@@ -12,6 +13,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -62,15 +64,37 @@ public class Cart extends BaseEntity {
         this.createdAt = LocalDateTime.now();
     }
 
+    /**
+     * 활성화여부 변경
+     * @param activated 활성화여부
+     */
     public void updateActivated(Boolean activated) {
         this.activated = activated;
         this.updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 사용자 구매 수량, 재고 수량 변경
+     * @param userPurchaseQuantity 사용자 구매 수량
+     * @param itemUsedQuantity 재고 수량
+     */
     public void addQuantity(int userPurchaseQuantity, int itemUsedQuantity) {
         this.userPurchaseQuantity += userPurchaseQuantity;
         this.itemUsedQuantity += userPurchaseQuantity * itemUsedQuantity;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 장바구니에 담긴 상품이 cartIds 에 포함되어 있는지 확인
+     * @param carts 장바구니 목록
+     * @param cartIds 장바구니 아이디 목록
+     */
+    public static void checkContainCartsByIds(List<Cart> carts, List<Long> cartIds) {
+        for (Cart cart : carts) {
+            if (!cartIds.contains(cart.getId())) {
+                throw new BadRequestException("장바구니에 담긴 상품의 정보가 올바르지 않습니다.");
+            }
+        }
     }
 
 }

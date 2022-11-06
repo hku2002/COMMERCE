@@ -5,6 +5,7 @@ import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.order.domain.Order;
+import com.commerce.order.dto.DeliveryResponseDto;
 import com.commerce.user.domain.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
@@ -53,6 +54,14 @@ public class Delivery extends BaseEntity {
         this.order = order;
         this.address = address;
         this.status = status;
+    }
+
+    public DeliveryResponseDto toDeliveryResponseDto() {
+        return DeliveryResponseDto.builder()
+                .id(this.id)
+                .address(this.address)
+                .status(this.status)
+                .build();
     }
 
     public enum DeliveryStatus implements IEnumType {

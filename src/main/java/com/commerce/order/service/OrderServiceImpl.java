@@ -61,10 +61,19 @@ public class OrderServiceImpl {
     public void addOrder(List<Long> cartIds) {
         Member member = memberRepository.findByUserIdAndActivated(jwtTokenManager.getUserIdByToken(), true);
         member.checkMemberExist(member);
-        List<Cart> carts = checkCarts(cartIds, member.getId());
+
+        List<Cart> carts = cartRepository.findCartsByCartIdsAndMemberId(cartIds, member.getId());
+        Cart.checkContainCartsByIds(carts, cartIds);
+
         List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
         checkItems(itemIds);
-        checkItemStockAndSubtractStockByCarts(carts);
+        carts.forEach(cart -> {
+            Item item = itemRepository.findById(cart.getItem().getId())
+                    .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
+            item.compareStockQuantityWithCartItemQuantity(cart.getItemUsedQuantity());
+            item.subtractStock(cart.getItemUsedQuantity());
+        });
+
         Order order = saveOrder(member, carts);
         saveOrderItems(carts, order);
         saveDelivery(member, order);
@@ -86,38 +95,6 @@ public class OrderServiceImpl {
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
         List<Long> itemIds = orderItems.stream().map(OrderItem::getItemId).collect(Collectors.toList());
         checkItems(itemIds);
-        checkItemAndAddStockByOrderItems(orderItems);
-    }
-
-    /**
-     * item 존재 체크
-     * @param itemIds item id 목록
-     */
-    private void checkItems(List<Long> itemIds) {
-        List<Item> items = itemRepository.findAllByIdInAndActivated(itemIds, true);
-        if (items.size() < 1) {
-            throw new BadRequestException("재고 상품이 존재하지 않습니다.");
-        }
-    }
-
-    /**
-     * Cart 정보로 Item 재고 체크 및 차감
-     * @param carts 장바구니 목록
-     */
-    private void checkItemStockAndSubtractStockByCarts(List<Cart> carts) {
-        carts.forEach(cart -> {
-            Item item = itemRepository.findById(cart.getItem().getId())
-                    .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
-            item.compareStockQuantityWithCartItemQuantity(cart.getItemUsedQuantity());
-            item.subtractStock(cart.getItemUsedQuantity());
-        });
-    }
-
-    /**
-     * OrderItem 정보로 재고 체크 및 추가
-     * @param orderItems orderItem 목록
-     */
-    private void checkItemAndAddStockByOrderItems(List<OrderItem> orderItems) {
         orderItems.forEach(orderItem -> {
             Item item = itemRepository.findById(orderItem.getItemId())
                     .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
@@ -126,35 +103,12 @@ public class OrderServiceImpl {
     }
 
     /**
-     * 장바구니 목록 조회
-     * @param cartIds 장바구니 ID 목록
+     * item 존재 체크
+     * @param itemIds item id 목록
      */
-    private List<Cart> checkCarts(List<Long> cartIds, Long memberId) {
-        List<Cart> carts = cartRepository.findCartsByCartIdsAndMemberId(cartIds, memberId);
-        if (carts.size() != cartIds.size()) {
-            throw new BadRequestException("잘못된 장바구니 아이디입니다.");
-        }
-        return carts;
-    }
-
-    /**
-     * 총 주문 가격 계산
-     * @param carts 장바구니 목록
-     */
-    private int calculateTotalPrice(List<Cart> carts) {
-        return carts.stream().mapToInt(cart -> cart.getItem().getPrice().getSalePrice()).sum();
-    }
-
-    /**
-     * 주문 상품 이름 생성
-     * @param carts 장바구니 목록
-     */
-    private String createOrderName(List<Cart> carts) {
-        String name = carts.get(0).getProduct().getName();
-        if (carts.size() > 1) {
-            name += " 외 " + (carts.size() - 1) + "건";
-        }
-        return name;
+    private void checkItems(List<Long> itemIds) {
+        List<Item> items = itemRepository.findAllByIdInAndActivated(itemIds, true);
+        Item.checkItemSize(items);
     }
 
     /**
@@ -201,8 +155,8 @@ public class OrderServiceImpl {
         return orderRepository.save(
                 Order.builder()
                         .member(member)
-                        .name(createOrderName(carts))
-                        .totalPrice(calculateTotalPrice(carts))
+                        .name(Order.createOrderNameByCarts(carts))
+                        .totalPrice(Order.calculateTotalPrice(carts))
                         .build());
     }
 

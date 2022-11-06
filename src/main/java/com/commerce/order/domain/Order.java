@@ -1,5 +1,6 @@
 package com.commerce.order.domain;
 
+import com.commerce.cart.domain.Cart;
 import com.commerce.delivery.domain.Delivery;
 import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
@@ -123,6 +124,30 @@ public class Order extends BaseEntity {
         if (order.getDelivery().getStatus() != STAND_BY) {
             throw new BadRequestException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
         }
+    }
+
+    /**
+     * 총 주문 가격 계산
+     * @param carts 장바구니 목록
+     */
+    public static int calculateTotalPrice(List<Cart> carts) {
+        return carts.stream().mapToInt(cart -> cart.getItem().getPrice().getSalePrice()).sum();
+    }
+
+    /**
+     * 주문 상품 이름 생성
+     * @param carts 장바구니 목록
+     */
+    public static String createOrderNameByCarts(List<Cart> carts) {
+        String name = carts.get(0).getProduct().getName();
+        if (carts.size() > 1) {
+            StringBuffer stringBuffer = new StringBuffer(name);
+            stringBuffer.append(" 외 ")
+                    .append(carts.size() - 1)
+                    .append("건");
+            name = String.valueOf(stringBuffer);
+        }
+        return name;
     }
 
 }
