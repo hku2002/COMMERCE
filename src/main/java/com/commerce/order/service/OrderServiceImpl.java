@@ -5,6 +5,7 @@ import com.commerce.cart.repositiry.CartRepository;
 import com.commerce.delivery.domain.Delivery;
 import com.commerce.delivery.repository.DeliveryRepository;
 import com.commerce.global.common.exception.BadRequestException;
+import com.commerce.global.common.token.JwtTokenManager;
 import com.commerce.order.domain.Order;
 import com.commerce.order.domain.OrderItem;
 import com.commerce.order.dto.OrderResponseDto;
@@ -40,6 +41,7 @@ public class OrderServiceImpl {
     private final DeliveryRepository deliveryRepository;
     private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
+    private final JwtTokenManager jwtTokenManager;
 
     /**
      * 주문 목록 조회
@@ -56,8 +58,7 @@ public class OrderServiceImpl {
      */
     @Transactional
     public void addOrder(List<Long> cartIds) {
-        Member member = memberRepository.findById(1L)
-                .orElseThrow(() -> new BadRequestException("회원이 존재하지 않습니다."));
+        Member member = checkMember();
         List<Cart> carts = checkCarts(cartIds, member.getId());
         List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
         checkItems(itemIds);
@@ -73,10 +74,7 @@ public class OrderServiceImpl {
      */
     @Transactional
     public void cancelOrder(Long orderId) {
-        Order order = orderRepository.findWithDeliveryByOrderId(orderId);
-        if (ObjectUtils.isEmpty(order)) {
-            throw new BadRequestException("주문이 존재하지 않습니다.");
-        }
+        Order order = checkOrder(orderId);
         checkCanceled(order);
         checkDelivery(order);
         order.updateOrderStatus(CANCELED);
@@ -227,6 +225,29 @@ public class OrderServiceImpl {
                         .name(createOrderName(carts))
                         .totalPrice(calculateTotalPrice(carts))
                         .build());
+    }
+
+    /**
+     * 주문 존재 확인
+     * @param orderId 주문 번호
+     */
+    private Order checkOrder(Long orderId) {
+        Order order = orderRepository.findWithDeliveryByOrderId(orderId);
+        if (ObjectUtils.isEmpty(order)) {
+            throw new BadRequestException("주문이 존재하지 않습니다.");
+        }
+        return order;
+    }
+
+    /**
+     * 회원 체크
+     */
+    private Member checkMember() {
+        Member member = memberRepository.findByUserIdAndActivated(jwtTokenManager.getUserIdByToken(), true);
+        if (ObjectUtils.isEmpty(member)) {
+            throw new BadRequestException("회원 정보를 찾을 수 없습니다.");
+        }
+        return member;
     }
 
 }

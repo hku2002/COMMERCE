@@ -14,14 +14,18 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
 
-import static com.commerce.global.common.constants.CommonConstants.REFRESH_TOKEN_TIME;
+import static com.commerce.global.common.constants.CommonConstants.*;
+import static com.commerce.global.common.constants.CommonConstants.BEARER_TOKEN_BEGIN_INDEX;
 
 @Component
 public class JwtTokenManager implements InitializingBean {
@@ -64,6 +68,23 @@ public class JwtTokenManager implements InitializingBean {
 
         User principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+    }
+
+    public String resolveToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
+        if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
+            return bearerToken.substring(BEARER_TOKEN_BEGIN_INDEX);
+        }
+        return null;
+    }
+
+    public String getUserIdByToken() {
+        return Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(resolveToken(((ServletRequestAttributes) RequestContextHolder
+                        .getRequestAttributes()).getRequest()))
+                .getBody().get("userId", String.class);
     }
 
     public boolean validateToken(String token) {

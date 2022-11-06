@@ -27,7 +27,7 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) {
-        String token = resolveToken(request);
+        String token = jwtTokenManager.resolveToken(request);
         try {
             firebaseAuth.verifyIdToken(token);
         } catch (FirebaseAuthException e) {
@@ -39,11 +39,4 @@ public class FirebaseTokenFilter extends OncePerRequestFilter {
         }
     }
 
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        if (bearerToken != null && bearerToken.startsWith(BEARER_PREFIX)) {
-            return bearerToken.substring(BEARER_TOKEN_BEGIN_INDEX);
-        }
-        return null;
-    }
 }

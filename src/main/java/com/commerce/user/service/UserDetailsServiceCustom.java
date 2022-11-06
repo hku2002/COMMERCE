@@ -33,7 +33,7 @@ public class UserDetailsServiceCustom implements UserDetailsService {
             throw new BadRequestException("탈퇴한 사용자 입니다.");
         }
 
-        GrantedAuthority grantedAuthority = (GrantedAuthority) () -> "ROLE_USER";
+        GrantedAuthority grantedAuthority = () -> "ROLE_USER";
         return new User(member.getUsername(), member.getPassword(), List.of(grantedAuthority));
     }
 }
