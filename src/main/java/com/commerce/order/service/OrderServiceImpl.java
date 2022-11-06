@@ -64,6 +64,7 @@ public class OrderServiceImpl {
         member.checkMemberExist(member);
 
         List<Cart> carts = cartRepository.findCartsByCartIdsAndMemberId(cartIds, member.getId());
+        Cart.checkCartsEmpty(carts);
         Cart.checkContainCartsByIds(carts, cartIds);
 
         List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
@@ -71,8 +72,7 @@ public class OrderServiceImpl {
         carts.forEach(cart -> {
             Item item = itemRepository.findById(cart.getItem().getId())
                     .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
-            item.compareStockQuantityWithCartItemQuantity(cart.getItemUsedQuantity());
-            item.subtractStock(cart.getItemUsedQuantity());
+            item.compareStockQuantityWithItemQuantity(cart.getItemUsedQuantity());
         });
 
         Order order = saveOrder(member, carts);
@@ -90,6 +90,19 @@ public class OrderServiceImpl {
         order.checkOrderCompletePossibility();
         order.updateOrderStatus(COMPLETED);
         saveDelivery(member, order);
+
+        List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
+        List<Long> itemIds = orderItems.stream().map(OrderItem -> OrderItem.getItemId()).collect(Collectors.toList());
+        checkItems(itemIds);
+        orderItems.forEach(orderItem -> {
+            Item item = itemRepository.findById(orderItem.getItemId())
+                    .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
+            item.compareStockQuantityWithItemQuantity(orderItem.getItemUsedQuantity());
+            item.subtractStock(orderItem.getItemUsedQuantity());
+        });
+
+        
+
     }
 
     /**

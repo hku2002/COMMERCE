@@ -84,6 +84,12 @@ public class Cart extends BaseEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public static void checkCartsEmpty(List<Cart> carts) {
+        if (carts.size() < 1) {
+            throw new BadRequestException("장바구니에 담긴 상품이 없습니다.");
+        }
+    }
+
     /**
      * 장바구니에 담긴 상품이 cartIds 에 포함되어 있는지 확인
      * @param carts 장바구니 목록

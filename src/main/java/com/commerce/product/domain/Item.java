@@ -77,11 +77,11 @@ public class Item extends BaseEntity {
     }
 
     /**
-     * 재고와 장바구니 데이터의 재고 수량을 비교
-     * @param cartItemQuantity 장바구니 데이터의 재고 수량
+     * 재고와 매개변수 데이터의 재고 수량을 비교
+     * @param itemQuantity 비교할 재고 수량
      */
-    public void compareStockQuantityWithCartItemQuantity(int cartItemQuantity) {
-        if (this.stockQuantity < cartItemQuantity) {
+    public void compareStockQuantityWithItemQuantity(int itemQuantity) {
+        if (this.stockQuantity < itemQuantity) {
             throw new BadRequestException("재고가 부족합니다.");
         }
     }
