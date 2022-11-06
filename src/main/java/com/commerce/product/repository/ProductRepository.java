@@ -11,6 +11,8 @@ import static com.commerce.product.domain.Product.*;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
+    Product findByIdAndActivated(Long id, boolean activated);
     List<Product> findProductsByActivatedAndStatusIn(boolean activated, List<DisplayStatus> displayStatus, Pageable pageable);
 
     List<Product> findByIdIn(List<Long> productIds);

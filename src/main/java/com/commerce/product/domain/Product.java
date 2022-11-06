@@ -3,9 +3,11 @@ package com.commerce.product.domain;
 import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
 import com.commerce.global.common.Price;
+import com.commerce.global.common.exception.BadRequestException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -98,6 +100,12 @@ public class Product extends BaseEntity {
         @Override
         public String getName() {
             return value;
+        }
+    }
+
+    public static void checkProductExist(Product product) {
+        if (ObjectUtils.isEmpty(product)) {
+            throw new BadRequestException("상품이 존재하지 않습니다.");
         }
     }
 }

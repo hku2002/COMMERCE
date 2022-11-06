@@ -1,7 +1,6 @@
 package com.commerce.product.service;
 
 import com.commerce.global.common.dto.PagingCommonRequestDto;
-import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.product.domain.Product;
 import com.commerce.product.dto.OptionVo;
 import com.commerce.product.dto.ProductDetailResponseDto;
@@ -43,17 +42,13 @@ public class ProductServiceImpl {
      * param id
      */
     public ProductDetailResponseDto findProduct(Long id) {
-        ProductDetailResponseDto responseDto = new ProductDetailResponseDto(productRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("해당 상품이 없습니다.")));
-        responseDto.setOptions(findOptions(id));
+        Product product = productRepository.findByIdAndActivated(id, true);
+        Product.checkProductExist(product);
+
+        ProductDetailResponseDto responseDto = new ProductDetailResponseDto(product);
+        responseDto.setOptions(optionRepository.findWithItemByProductIdAndActivated(id, true)
+                .stream().map(OptionVo::new).collect(Collectors.toList()));
         return responseDto;
     }
 
-    /**
-     * 옵션 목록 조회
-     * @param productId
-     */
-    private List<OptionVo> findOptions(Long productId) {
-        return optionRepository.findWithItemByProductIdAndActivated(productId, true).stream().map(OptionVo::new).collect(Collectors.toList());
-    }
 }
