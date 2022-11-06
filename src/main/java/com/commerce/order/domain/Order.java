@@ -20,6 +20,7 @@ import java.util.List;
 
 import static com.commerce.delivery.domain.Delivery.DeliveryStatus.STAND_BY;
 import static com.commerce.order.domain.Order.OrderStatus.CANCELED;
+import static com.commerce.order.domain.Order.OrderStatus.COMPLETED;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -65,11 +66,12 @@ public class Order extends BaseEntity {
         this.orderItems = orderItems;
         this.delivery = delivery;
         this.name = name;
-        this.status = OrderStatus.COMPLETED;
+        this.status = OrderStatus.PREPARATION;
         this.totalPrice = totalPrice;
     }
 
     public enum OrderStatus implements IEnumType {
+        PREPARATION ("PREPARATION"),
         COMPLETED   ("COMPLETED"),
         CANCELED    ("CANCELED");
 
@@ -112,6 +114,16 @@ public class Order extends BaseEntity {
     public void checkOrderCanceled() {
         if (this.getStatus() == CANCELED) {
             throw new BadRequestException("이미 취소된 주문입니다.");
+        }
+    }
+
+    /**
+     * 주문 완료 가능 체크
+     */
+    public void checkOrderCompletePossibility() {
+        checkOrderCanceled();
+        if (this.getStatus() == COMPLETED) {
+            throw new BadRequestException("이미 완료된 주문입니다.");
         }
     }
 

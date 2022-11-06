@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.commerce.delivery.domain.Delivery.DeliveryStatus.STAND_BY;
 import static com.commerce.order.domain.Order.OrderStatus.CANCELED;
+import static com.commerce.order.domain.Order.OrderStatus.COMPLETED;
 
 @Slf4j
 @Service
@@ -54,7 +55,7 @@ public class OrderServiceImpl {
     }
 
     /**
-     * 주문 추가 (주문 완료)
+     * 주문 추가 (주문 준비)
      * @param cartIds 장바구니 아이디
      */
     @Transactional
@@ -76,6 +77,18 @@ public class OrderServiceImpl {
 
         Order order = saveOrder(member, carts);
         saveOrderItems(carts, order);
+    }
+
+    /**
+     * 주문 완료
+     * @param orderId 주문번호
+     */
+    @Transactional
+    public void completeOrder(Long orderId) {
+        Member member = memberRepository.findByUserIdAndActivated(jwtTokenManager.getUserIdByToken(), true);
+        Order order = orderRepository.findByIdAndActivated(orderId, true);
+        order.checkOrderCompletePossibility();
+        order.updateOrderStatus(COMPLETED);
         saveDelivery(member, order);
     }
 
