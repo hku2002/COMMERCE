@@ -75,8 +75,8 @@ public class OrderServiceImpl {
     @Transactional
     public void cancelOrder(Long orderId) {
         Order order = checkOrder(orderId);
-        order.checkCanceled(order);
-        order.checkDelivery(order);
+        order.checkCanceled();
+        order.checkCancelPossibilityByDelivery(order);
         order.updateOrderStatus(CANCELED);
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
