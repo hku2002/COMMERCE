@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +57,8 @@ public class OrderServiceImpl {
      */
     @Transactional
     public void addOrder(List<Long> cartIds) {
-        Member member = checkMember();
+        Member member = memberRepository.findByUserIdAndActivated(jwtTokenManager.getUserIdByToken(), true);
+        member.checkMemberExist(member);
         List<Cart> carts = checkCarts(cartIds, member.getId());
         List<Long> itemIds = carts.stream().map(Cart -> Cart.getItem().getId()).collect(Collectors.toList());
         checkItems(itemIds);
@@ -74,9 +74,10 @@ public class OrderServiceImpl {
      */
     @Transactional
     public void cancelOrder(Long orderId) {
-        Order order = checkOrder(orderId);
-        order.checkCanceled();
-        order.checkCancelPossibilityByDelivery(order);
+        Order order = orderRepository.findWithDeliveryByOrderId(orderId);
+        order.checkOrderExist(order);
+        order.checkOrderCanceled();
+        order.checkDeliveryCancelPossibility(order);
         order.updateOrderStatus(CANCELED);
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
@@ -200,29 +201,6 @@ public class OrderServiceImpl {
                         .name(createOrderName(carts))
                         .totalPrice(calculateTotalPrice(carts))
                         .build());
-    }
-
-    /**
-     * 주문 존재 확인
-     * @param orderId 주문 번호
-     */
-    private Order checkOrder(Long orderId) {
-        Order order = orderRepository.findWithDeliveryByOrderId(orderId);
-        if (ObjectUtils.isEmpty(order)) {
-            throw new BadRequestException("주문이 존재하지 않습니다.");
-        }
-        return order;
-    }
-
-    /**
-     * 회원 체크
-     */
-    private Member checkMember() {
-        Member member = memberRepository.findByUserIdAndActivated(jwtTokenManager.getUserIdByToken(), true);
-        if (ObjectUtils.isEmpty(member)) {
-            throw new BadRequestException("회원 정보를 찾을 수 없습니다.");
-        }
-        return member;
     }
 
 }

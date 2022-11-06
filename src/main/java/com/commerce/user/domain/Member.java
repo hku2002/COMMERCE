@@ -2,9 +2,11 @@ package com.commerce.user.domain;
 
 import com.commerce.global.common.Address;
 import com.commerce.global.common.BaseEntity;
+import com.commerce.global.common.exception.BadRequestException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -53,6 +55,26 @@ public class Member extends BaseEntity {
         this.activated = activated;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    /**
+     * 회원이 존재하는지 체크
+     * @param member 회원 객체
+     */
+    public void checkMemberExist(Member member) {
+        if (ObjectUtils.isEmpty(member)) {
+            throw new BadRequestException("회원 정보를 찾을 수 없습니다.");
+        }
+    }
+
+    /**
+     * 회원이 중복 체크
+     * @param member 회원 객체
+     */
+    public void checkMemberDuplicate(Member member) {
+        if (ObjectUtils.isEmpty(member)) {
+            throw new BadRequestException("회원 정보를 찾을 수 없습니다.");
+        }
     }
 
 }

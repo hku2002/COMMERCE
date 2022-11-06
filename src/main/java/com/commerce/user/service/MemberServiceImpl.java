@@ -1,12 +1,11 @@
 package com.commerce.user.service;
 
-import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.domain.Member;
+import com.commerce.user.dto.JoinMemberDto;
 import com.commerce.user.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 
 @Service
@@ -21,9 +20,10 @@ public class MemberServiceImpl {
      * param member
      */
     @Transactional
-    public Long join(Member member) {
-        validateDuplicateMember(member);
-        return memberRepository.save(member).getId();
+    public Long join(JoinMemberDto joinMemberDto) {
+        Member member = memberRepository.findByUserIdAndActivated(joinMemberDto.getUserId(), true);
+        member.checkMemberDuplicate(member);
+        return memberRepository.save(joinMemberDto.toEntity()).getId();
     }
 
     /**
@@ -32,20 +32,8 @@ public class MemberServiceImpl {
      */
     public Member findOne(String userId) {
         Member member = memberRepository.findByUserIdAndActivated(userId, true);
-        if (ObjectUtils.isEmpty(member)) {
-            throw new BadRequestException("존재하지 않는 회원입니다.");
-        }
-
+        member.checkMemberExist(member);
         return member;
     }
 
-    /**
-     * 회원 중복 검사
-     * param member
-     */
-    private void validateDuplicateMember(Member member) {
-        if (!ObjectUtils.isEmpty(memberRepository.findByUserIdAndActivated(member.getUserId(), true))) {
-            throw new BadRequestException("이미 존재하는 회원입니다.");
-        }
-    }
 }

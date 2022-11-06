@@ -2,15 +2,13 @@ package com.commerce.user.service;
 
 import com.commerce.global.common.Address;
 import com.commerce.global.common.exception.BadRequestException;
-import com.commerce.user.domain.Member;
+import com.commerce.user.dto.JoinMemberDto;
 import com.commerce.user.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,23 +29,19 @@ class MemberServiceImplTest {
                 .addressDetail("아이파크몰 test 호")
                 .zipCode("12345")
                 .build();
-        Member member = Member.builder()
-                .userId("testId")
-                .password("testPassword12")
-                .username("홍길동")
-                .email("gildong@commerce.com")
-                .phoneNumber("01012341234")
-                .address(address)
-                .activated(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        JoinMemberDto joinMemberDto = new JoinMemberDto();
+        joinMemberDto.setUserId("testId");
+        joinMemberDto.setPassword("1234");
+        joinMemberDto.setUsername("홍길동");
+        joinMemberDto.setEmail("test01@test.com");
+        joinMemberDto.setPhoneNumber("01012345678");
+        joinMemberDto.setAddress(address);
 
         // when
-        memberService.join(member);
+        memberService.join(joinMemberDto);
 
         // then
-        assertEquals(member.getUserId(), memberRepository.findByUserIdAndActivated("testId", true).getUserId());
+        assertEquals(joinMemberDto.getUserId(), memberRepository.findByUserIdAndActivated("testId", true).getUserId());
     }
 
     @Test
@@ -59,23 +53,19 @@ class MemberServiceImplTest {
                 .addressDetail("아이파크몰 test 호")
                 .zipCode("12345")
                 .build();
-        Member member = Member.builder()
-                .userId("testId")
-                .password("testPassword12")
-                .username("홍길동")
-                .email("gildong@commerce.com")
-                .phoneNumber("01012341234")
-                .address(address)
-                .activated(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        JoinMemberDto joinMemberDto = new JoinMemberDto();
+        joinMemberDto.setUserId("testId");
+        joinMemberDto.setPassword("1234");
+        joinMemberDto.setUsername("홍길동");
+        joinMemberDto.setEmail("test01@test.com");
+        joinMemberDto.setPhoneNumber("01012345678");
+        joinMemberDto.setAddress(address);
 
         // when
-        memberService.join(member);
+        memberService.join(joinMemberDto);
 
         // then
-        assertThrows(BadRequestException.class, () -> memberService.join(member));
+        assertThrows(BadRequestException.class, () -> memberService.join(joinMemberDto));
     }
 
     @Test
@@ -87,23 +77,19 @@ class MemberServiceImplTest {
                 .addressDetail("아이파크몰 test 호")
                 .zipCode("12345")
                 .build();
-        Member member = Member.builder()
-                .userId("userId")
-                .password("testPassword12")
-                .username("홍길동")
-                .email("gildong@commerce.com")
-                .phoneNumber("01012341234")
-                .address(address)
-                .activated(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        JoinMemberDto joinMemberDto = new JoinMemberDto();
+        joinMemberDto.setUserId("testId");
+        joinMemberDto.setPassword("1234");
+        joinMemberDto.setUsername("홍길동");
+        joinMemberDto.setEmail("test01@test.com");
+        joinMemberDto.setPhoneNumber("01012345678");
+        joinMemberDto.setAddress(address);
 
         // when
-        Long memberId = memberService.join(member);
+        Long memberId = memberService.join(joinMemberDto);
 
         // then
-        assertEquals(memberId, memberService.findOne(member.getUserId()).getId());
+        assertEquals(memberId, memberService.findOne(joinMemberDto.getUserId()).getId());
     }
 
     @Test
@@ -115,20 +101,16 @@ class MemberServiceImplTest {
                 .addressDetail("아이파크몰 test 호")
                 .zipCode("12345")
                 .build();
-        Member member = Member.builder()
-                .userId("testId")
-                .password("testPassword12")
-                .username("홍길동")
-                .email("gildong@commerce.com")
-                .phoneNumber("01012341234")
-                .address(address)
-                .activated(true)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
-                .build();
+        JoinMemberDto joinMemberDto = new JoinMemberDto();
+        joinMemberDto.setUserId("testId");
+        joinMemberDto.setPassword("1234");
+        joinMemberDto.setUsername("홍길동");
+        joinMemberDto.setEmail("test01@test.com");
+        joinMemberDto.setPhoneNumber("01012345678");
+        joinMemberDto.setAddress(address);
 
         // when
-        memberService.join(member);
+        memberService.join(joinMemberDto);
 
         // then
         assertThrows(BadRequestException.class, () -> memberService.findOne("emptyId"));

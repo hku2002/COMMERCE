@@ -96,9 +96,19 @@ public class Order extends BaseEntity {
     }
 
     /**
+     * 주문 데이터 존재 체크
+     * @param order 주문 객체
+     */
+    public void checkOrderExist(Order order) {
+        if (ObjectUtils.isEmpty(order)) {
+            throw new BadRequestException("주문이 존재하지 않습니다.");
+        }
+    }
+
+    /**
      * 주문 취소 체크
      */
-    public void checkCanceled() {
+    public void checkOrderCanceled() {
         if (this.getStatus() == CANCELED) {
             throw new BadRequestException("이미 취소된 주문입니다.");
         }
@@ -118,7 +128,7 @@ public class Order extends BaseEntity {
      * 배송 상태값 체크 및 주문 취소여부 확인
      * @param order 주문 객체
      */
-    public void checkCancelPossibilityByDelivery(Order order) {
+    public void checkDeliveryCancelPossibility(Order order) {
         checkDeliveryExist(order);
         if (order.getDelivery().getStatus() != STAND_BY) {
             throw new BadRequestException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
