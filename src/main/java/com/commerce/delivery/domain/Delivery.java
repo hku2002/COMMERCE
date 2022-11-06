@@ -3,12 +3,14 @@ package com.commerce.delivery.domain;
 import com.commerce.global.common.Address;
 import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
+import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.order.domain.Order;
 import com.commerce.user.domain.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 
@@ -70,6 +72,16 @@ public class Delivery extends BaseEntity {
         @Override
         public String getName() {
             return value;
+        }
+    }
+
+    /**
+     * 배송 존재 체크
+     * @param delivery
+     */
+    public void checkDeliveryExist(Delivery delivery) {
+        if (ObjectUtils.isEmpty(delivery)) {
+            throw new BadRequestException("배송이 존재하지 않습니다.");
         }
     }
 

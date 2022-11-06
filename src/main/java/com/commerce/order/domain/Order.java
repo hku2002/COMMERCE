@@ -115,21 +115,11 @@ public class Order extends BaseEntity {
     }
 
     /**
-     * 배송데이터 존재 체크
-     * @param order
-     */
-    public void checkDeliveryExist(Order order) {
-        if (ObjectUtils.isEmpty(order.getDelivery())) {
-            throw new BadRequestException("배송이 존재하지 않습니다.");
-        }
-    }
-
-    /**
      * 배송 상태값 체크 및 주문 취소여부 확인
      * @param order 주문 객체
      */
     public void checkDeliveryCancelPossibility(Order order) {
-        checkDeliveryExist(order);
+        order.getDelivery().checkDeliveryExist(order.getDelivery());
         if (order.getDelivery().getStatus() != STAND_BY) {
             throw new BadRequestException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
         }
