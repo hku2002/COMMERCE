@@ -2,6 +2,7 @@ package com.commerce.product.domain;
 
 import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.Price;
+import com.commerce.global.common.exception.BadRequestException;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,14 +58,32 @@ public class Item extends BaseEntity {
         this.productProductMappings = productProductMappings;
     }
 
+    /**
+     * 재고 차감
+     * @param stockQuantity 차감할 재고 수량
+     */
     public void subtractStock(int stockQuantity) {
         this.stockQuantity -= stockQuantity;
         this.updatedAt = LocalDateTime.now();
     }
 
+    /**
+     * 재고 증가
+     * @param stockQuantity 추가할 재고 수량
+     */
     public void addStock(int stockQuantity) {
         this.stockQuantity += stockQuantity;
         this.updatedAt = LocalDateTime.now();
+    }
+
+    /**
+     * 재고와 장바구니 데이터의 재고 수량을 비교
+     * @param cartItemQuantity 장바구니 데이터의 재고 수량
+     */
+    public void compareStockQuantityWithCartItemQuantity(int cartItemQuantity) {
+        if (this.stockQuantity < cartItemQuantity) {
+            throw new BadRequestException("재고가 부족합니다.");
+        }
     }
 
 }

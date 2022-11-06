@@ -3,18 +3,22 @@ package com.commerce.order.domain;
 import com.commerce.delivery.domain.Delivery;
 import com.commerce.global.common.BaseEntity;
 import com.commerce.global.common.IEnumType;
+import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.domain.Member;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.util.ObjectUtils;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.commerce.delivery.domain.Delivery.DeliveryStatus.STAND_BY;
+import static com.commerce.order.domain.Order.OrderStatus.CANCELED;
 import static javax.persistence.CascadeType.PERSIST;
 import static javax.persistence.FetchType.LAZY;
 import static javax.persistence.GenerationType.IDENTITY;
@@ -64,6 +68,10 @@ public class Order extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
+    /**
+     * 주문 상태 변경
+     * @param status 변경할 주문 상태값
+     */
     public void updateOrderStatus(OrderStatus status) {
         this.status = status;
         this.updatedAt = LocalDateTime.now();
@@ -84,6 +92,29 @@ public class Order extends BaseEntity {
         @Override
         public String getName() {
             return value;
+        }
+    }
+
+    /**
+     * 주문 취소 체크
+     * @param order 주문 객체
+     */
+    public void checkCanceled(Order order) {
+        if (order.getStatus() == CANCELED) {
+            throw new BadRequestException("이미 취소된 주문입니다.");
+        }
+    }
+
+    /**
+     * 배송 상태값 체크 및 주문 취소여부 확인
+     * @param order 주문 객체
+     */
+    public void checkDelivery(Order order) {
+        if (ObjectUtils.isEmpty(order.getDelivery())) {
+            throw new BadRequestException("배송이 존재하지 않습니다.");
+        }
+        if (order.getDelivery().getStatus() != STAND_BY) {
+            throw new BadRequestException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
         }
     }
 

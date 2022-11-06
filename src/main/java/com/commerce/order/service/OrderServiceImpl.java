@@ -75,8 +75,8 @@ public class OrderServiceImpl {
     @Transactional
     public void cancelOrder(Long orderId) {
         Order order = checkOrder(orderId);
-        checkCanceled(order);
-        checkDelivery(order);
+        order.checkCanceled(order);
+        order.checkDelivery(order);
         order.updateOrderStatus(CANCELED);
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
@@ -90,8 +90,8 @@ public class OrderServiceImpl {
      * @param itemIds item id 목록
      */
     private void checkItems(List<Long> itemIds) {
-        List<Item> item = itemRepository.findAllByIdInAndActivated(itemIds, true);
-        if (item.size() < 1) {
+        List<Item> items = itemRepository.findAllByIdInAndActivated(itemIds, true);
+        if (items.size() < 1) {
             throw new BadRequestException("재고 상품이 존재하지 않습니다.");
         }
     }
@@ -104,9 +104,7 @@ public class OrderServiceImpl {
         carts.forEach(cart -> {
             Item item = itemRepository.findById(cart.getItem().getId())
                     .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
-            if (item.getStockQuantity() < cart.getItemUsedQuantity()) {
-                throw new BadRequestException("재고가 부족합니다.");
-            }
+            item.compareStockQuantityWithCartItemQuantity(cart.getItemUsedQuantity());
             item.subtractStock(cart.getItemUsedQuantity());
         });
     }
@@ -121,19 +119,6 @@ public class OrderServiceImpl {
                     .orElseThrow(() -> new BadRequestException("재고 상품이 존재하지 않습니다."));
             item.addStock(orderItem.getItemUsedQuantity());
         });
-    }
-
-    /**
-     * 배송 상태값 체크 및 주문 취소여부 확인
-     * @param order 주문 객체
-     */
-    private void checkDelivery(Order order) {
-        if (ObjectUtils.isEmpty(order.getDelivery())) {
-            throw new BadRequestException("배송이 존재하지 않습니다.");
-        }
-        if (order.getDelivery().getStatus() != STAND_BY) {
-            throw new BadRequestException("배송이 준비중인 상품만 주문 취소가 가능합니다.");
-        }
     }
 
     /**
@@ -166,16 +151,6 @@ public class OrderServiceImpl {
             name += " 외 " + (carts.size() - 1) + "건";
         }
         return name;
-    }
-
-    /**
-     * 주문 취소 체크
-     * @param order 주문 객체
-     */
-    private void checkCanceled(Order order) {
-        if (order.getStatus() == CANCELED) {
-            throw new BadRequestException("이미 취소된 주문입니다.");
-        }
     }
 
     /**
