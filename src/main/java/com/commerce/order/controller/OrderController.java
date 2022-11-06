@@ -16,7 +16,7 @@ public class OrderController {
 
     @GetMapping("/v1/orders")
     public ResponseEntity<?> orders(PagingCommonRequestDto pagingCommonRequestDto) {
-        return CommonResponse.setResponse(orderServiceImpl.findOrders(1L, pagingCommonRequestDto.getLimit(), pagingCommonRequestDto.getOffset()));
+        return CommonResponse.setResponse(orderServiceImpl.findOrders(pagingCommonRequestDto.getLimit(), pagingCommonRequestDto.getOffset()));
     }
 
     @PostMapping("/v1/order")

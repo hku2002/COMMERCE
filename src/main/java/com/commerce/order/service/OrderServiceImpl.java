@@ -3,6 +3,7 @@ package com.commerce.order.service;
 import com.commerce.cart.domain.Cart;
 import com.commerce.cart.repositiry.CartRepository;
 import com.commerce.delivery.domain.Delivery;
+import com.commerce.delivery.domain.Delivery.DeliveryStatus;
 import com.commerce.delivery.repository.DeliveryRepository;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
@@ -44,10 +45,11 @@ public class OrderServiceImpl {
 
     /**
      * 주문 목록 조회
-     * @param memberId 회원번호
+     * @param limit : 페이지 번호(0 부터 시작)
+     * @param offset : 한 페이지에 보여줄 개수
      */
-    public List<OrderResponseDto> findOrders(Long memberId, int limit, int offset) {
-        return orderRepository.findWithMemberAndDeliveryByMemberId(memberId, PageRequest.of(limit, offset))
+    public List<OrderResponseDto> findOrders(int limit, int offset) {
+        return orderRepository.findWithMemberAndDeliveryByMemberId(jwtTokenManager.getUserIdByToken(), PageRequest.of(limit, offset))
                 .stream().map(OrderResponseDto::new).collect(Collectors.toList());
     }
 
@@ -79,6 +81,7 @@ public class OrderServiceImpl {
         order.checkOrderCanceled();
         order.checkDeliveryCancelPossibility(order);
         order.updateOrderStatus(CANCELED);
+        order.getDelivery().updateDeliveryStatus(DeliveryStatus.CANCELED);
 
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndActivated(orderId, true);
         List<Long> itemIds = orderItems.stream().map(OrderItem::getItemId).collect(Collectors.toList());

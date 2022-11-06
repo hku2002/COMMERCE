@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
+import java.time.LocalDateTime;
+
 import static javax.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PROTECTED;
 
@@ -69,6 +71,15 @@ public class Delivery extends BaseEntity {
         public String getName() {
             return value;
         }
+    }
+
+    /**
+     * 배송 상태 변경
+     * @param status 배송상태값
+     */
+    public void updateDeliveryStatus(DeliveryStatus status) {
+        this.status = status;
+        this.updatedAt = LocalDateTime.now();
     }
 
 }

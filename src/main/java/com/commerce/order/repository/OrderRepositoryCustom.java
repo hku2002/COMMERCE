@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface OrderRepositoryCustom {
 
-    List<Order> findWithMemberAndDeliveryByMemberId(Long memberId, Pageable pageable);
+    List<Order> findWithMemberAndDeliveryByMemberId(String userId, Pageable pageable);
     
     Order findWithDeliveryByOrderId(Long orderId);
 }
