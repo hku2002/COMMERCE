@@ -67,14 +67,4 @@ public class Member extends BaseEntity {
         }
     }
 
-    /**
-     * 회원이 중복 체크
-     * @param member 회원 객체
-     */
-    public void checkMemberDuplicate(Member member) {
-        if (ObjectUtils.isEmpty(member)) {
-            throw new BadRequestException("회원 정보를 찾을 수 없습니다.");
-        }
-    }
-
 }

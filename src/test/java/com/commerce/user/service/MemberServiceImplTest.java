@@ -69,30 +69,6 @@ class MemberServiceImplTest {
     }
 
     @Test
-    @Description("회원 조회")
-    public void findOneTest() {
-        // given
-        Address address = Address.builder()
-                .address("서울시 강남구 테헤란로 427")
-                .addressDetail("아이파크몰 test 호")
-                .zipCode("12345")
-                .build();
-        JoinMemberDto joinMemberDto = new JoinMemberDto();
-        joinMemberDto.setUserId("testId");
-        joinMemberDto.setPassword("1234");
-        joinMemberDto.setUsername("홍길동");
-        joinMemberDto.setEmail("test01@test.com");
-        joinMemberDto.setPhoneNumber("01012345678");
-        joinMemberDto.setAddress(address);
-
-        // when
-        Long memberId = memberService.join(joinMemberDto);
-
-        // then
-        assertEquals(memberId, memberService.findOne(joinMemberDto.getUserId()).getId());
-    }
-
-    @Test
     @Description("회원이 없을 경우")
     public void userEmptyTest() {
         // given
