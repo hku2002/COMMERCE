@@ -68,15 +68,6 @@ public class Order extends BaseEntity {
         this.totalPrice = totalPrice;
     }
 
-    /**
-     * 주문 상태 변경
-     * @param status 변경할 주문 상태값
-     */
-    public void updateOrderStatus(OrderStatus status) {
-        this.status = status;
-        this.updatedAt = LocalDateTime.now();
-    }
-
     public enum OrderStatus implements IEnumType {
         COMPLETED   ("COMPLETED"),
         CANCELED    ("CANCELED");
@@ -93,6 +84,15 @@ public class Order extends BaseEntity {
         public String getName() {
             return value;
         }
+    }
+
+    /**
+     * 주문 상태 변경
+     * @param status 변경할 주문 상태값
+     */
+    public void updateOrderStatus(OrderStatus status) {
+        this.status = status;
+        this.updatedAt = LocalDateTime.now();
     }
 
     /**
