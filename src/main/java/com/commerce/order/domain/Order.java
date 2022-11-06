@@ -102,7 +102,7 @@ public class Order extends BaseEntity {
      * 주문 데이터 존재 체크
      * @param order 주문 객체
      */
-    public void checkOrderExist(Order order) {
+    public static void checkOrderExist(Order order) {
         if (ObjectUtils.isEmpty(order)) {
             throw new BadRequestException("주문이 존재하지 않습니다.");
         }
