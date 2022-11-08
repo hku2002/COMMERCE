@@ -61,7 +61,7 @@ public class Member extends BaseEntity {
      * 회원이 존재하는지 체크
      * @param member 회원 객체
      */
-    public void checkMemberExist(Member member) {
+    public static void checkMemberExist(Member member) {
         if (ObjectUtils.isEmpty(member)) {
             throw new BadRequestException("회원 정보를 찾을 수 없습니다.");
         }
