@@ -4,13 +4,15 @@ import com.commerce.global.common.Address;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.dto.JoinMemberDto;
 import com.commerce.user.repository.MemberRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Description;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
@@ -19,6 +21,8 @@ class MemberServiceImplTest {
 
     @Autowired MemberServiceImpl memberService;
     @Autowired MemberRepository memberRepository;
+
+    private static final String USER_ID = "testId";
 
     @Test
     @Description("회원가입")
@@ -30,7 +34,7 @@ class MemberServiceImplTest {
                 .zipCode("12345")
                 .build();
         JoinMemberDto joinMemberDto = new JoinMemberDto();
-        joinMemberDto.setUserId("testId");
+        joinMemberDto.setUserId(USER_ID);
         joinMemberDto.setPassword("1234");
         joinMemberDto.setUsername("홍길동");
         joinMemberDto.setEmail("test01@test.com");
@@ -41,7 +45,7 @@ class MemberServiceImplTest {
         memberService.join(joinMemberDto);
 
         // then
-        assertEquals(joinMemberDto.getUserId(), memberRepository.findByUserIdAndActivated("testId", true).getUserId());
+        assertThat(memberRepository.findByUserIdAndActivated(USER_ID, true).getUserId(), is(USER_ID));
     }
 
     @Test
@@ -62,10 +66,12 @@ class MemberServiceImplTest {
         joinMemberDto.setAddress(address);
 
         // when
-        memberService.join(joinMemberDto);
+        memberRepository.save(joinMemberDto.toEntity());
 
         // then
-        assertThrows(BadRequestException.class, () -> memberService.join(joinMemberDto));
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            memberService.join(joinMemberDto);
+        });
     }
 
     @Test
@@ -86,9 +92,12 @@ class MemberServiceImplTest {
         joinMemberDto.setAddress(address);
 
         // when
-        memberService.join(joinMemberDto);
+        memberRepository.save(joinMemberDto.toEntity());
 
         // then
         assertThrows(BadRequestException.class, () -> memberService.findOne("emptyId"));
+        Assertions.assertThrows(BadRequestException.class, () -> {
+            memberService.findOne("emptyId");
+        });
     }
 }
