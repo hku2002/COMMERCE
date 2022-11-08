@@ -3,7 +3,6 @@ package com.commerce.product.service;
 import com.commerce.global.common.Price;
 import com.commerce.global.common.dto.PagingCommonRequestDto;
 import com.commerce.product.domain.Product;
-import com.commerce.product.dto.ProductResponseDto;
 import com.commerce.product.repository.ProductRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.commerce.global.common.Price.DiscountMethod.PRICE;
 import static com.commerce.product.domain.Product.CompositionType.SINGLE;
 import static com.commerce.product.domain.Product.DisplayStatus.DISPLAY;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest
 @Transactional
@@ -43,7 +43,7 @@ class ProductServiceImplTest {
                 .build();
 
         List<Product> products = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 3; i++) {
             products.add(Product.builder()
                     .imgPath("/img/test" + i)
                     .price(price)
@@ -55,18 +55,19 @@ class ProductServiceImplTest {
         }
 
         productRepository.saveAll(products);
-        System.out.println("products = " + products);
-        List<ProductResponseDto> results = products.stream().map(ProductResponseDto::new).collect(Collectors.toList());
-        System.out.println("results1 = " + results);
 
         // when
         PagingCommonRequestDto pagingCommonRequestDto = new PagingCommonRequestDto();
         pagingCommonRequestDto.setLimit(0);
         pagingCommonRequestDto.setOffset(3);
-        System.out.println("results2 = " + productServiceImpl.findProducts(pagingCommonRequestDto));
 
         // then
-        assertEquals(productServiceImpl.findProducts(pagingCommonRequestDto).get(0).getId(), results.get(0).getId());
+        assertAll(
+                () -> assertThat(productServiceImpl.findProducts(pagingCommonRequestDto).get(0).getId(), is(1L)),
+                () -> assertThat(productServiceImpl.findProducts(pagingCommonRequestDto).get(1).getId(), is(2L)),
+                () -> assertThat(productServiceImpl.findProducts(pagingCommonRequestDto).get(2).getId(), is(3L))
+        );
+
     }
 
 }
