@@ -100,9 +100,6 @@ public class OrderServiceImpl {
             item.compareStockQuantityWithItemQuantity(orderItem.getItemUsedQuantity());
             item.subtractStock(orderItem.getItemUsedQuantity());
         });
-
-        
-
     }
 
     /**
