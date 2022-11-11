@@ -4,7 +4,10 @@ import com.commerce.cart.domain.Cart;
 import com.commerce.cart.repository.CartRepository;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
+import com.commerce.order.domain.Order;
 import com.commerce.order.repository.OrderRepository;
+import com.commerce.product.domain.Item;
+import com.commerce.product.repository.ItemRepository;
 import com.commerce.user.domain.Member;
 import com.commerce.user.repository.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -16,10 +19,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
@@ -32,6 +38,9 @@ class OrderServiceImplTest {
 
     @Mock
     private CartRepository cartRepository;
+
+    @Mock
+    private ItemRepository itemRepository;
 
     @Mock
     private JwtTokenManager jwtTokenManager;
@@ -65,6 +74,78 @@ class OrderServiceImplTest {
 
         // when
         List<Long> cartIds = List.of(1L, 2L, 3L);
+
+        // then
+        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 생성 시 장바구니에 담긴 상품이 cartIds 에 포함되어 있지 않으면 예외를 던진다.")
+    void addOrderCheckContainCartsByIdsThrow() {
+        // given
+        List<Cart> carts = new ArrayList<>();
+        carts.add(Cart.builder().id(1L).build());
+
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(cartRepository.findCartsByCartIdsAndMemberId(anyList(), any())).willReturn(carts);
+
+        // when
+        List<Long> cartIds = List.of(2L);
+
+        // then
+        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 생성 시 장바구니 id에 연관된 재고가 없으면 예외를 던진다.")
+    void addOrderCheckItemExistByCartIdThrow() {
+        // given
+        List<Item> items = new ArrayList<>();
+        items.add(Item.builder().id(1L).build());
+        List<Cart> carts = new ArrayList<>();
+        carts.add(Cart.builder()
+                .id(1L)
+                .item(Item.builder().id(2L).build())
+                .build());
+
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(cartRepository.findCartsByCartIdsAndMemberId(anyList(), any())).willReturn(carts);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(items);
+        given(itemRepository.findById(2L)).willThrow(BadRequestException.class);
+
+        // when
+        List<Long> cartIds = List.of(1L);
+
+        // then
+        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 생성 시 장바구니 id에 연관된 재고가 주문할 수량보다 부족할 경우 예외를 던진다.")
+    void addOrderItemEmptyCheck() {
+        // given
+        List<Item> items = new ArrayList<>();
+        items.add(Item.builder().id(1L).build());
+        List<Cart> carts = new ArrayList<>();
+        carts.add(Cart.builder()
+                .id(1L)
+                .itemUsedQuantity(10)
+                .item(Item.builder().id(2L).build())
+                .build());
+
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(cartRepository.findCartsByCartIdsAndMemberId(anyList(), any())).willReturn(carts);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(items);
+        given(itemRepository.findById(2L)).willReturn(Optional.of(Item.builder().id(2L).stockQuantity(5).build()));
+
+        // when
+        List<Long> cartIds = List.of(1L);
 
         // then
         assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
