@@ -3,7 +3,7 @@ package com.commerce.cart.service;
 import com.commerce.cart.domain.Cart;
 import com.commerce.cart.dto.AddCartRequestDto;
 import com.commerce.cart.dto.CartResponseDto;
-import com.commerce.cart.repositiry.CartRepository;
+import com.commerce.cart.repository.CartRepository;
 import com.commerce.global.common.dto.PagingCommonRequestDto;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.product.domain.Item;
@@ -23,7 +23,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.commerce.product.domain.Product.*;
 
