@@ -1,7 +1,7 @@
 package com.commerce.order.service;
 
 import com.commerce.cart.domain.Cart;
-import com.commerce.cart.repositiry.CartRepository;
+import com.commerce.cart.repository.CartRepository;
 import com.commerce.delivery.domain.Delivery;
 import com.commerce.delivery.domain.Delivery.DeliveryStatus;
 import com.commerce.delivery.repository.DeliveryRepository;

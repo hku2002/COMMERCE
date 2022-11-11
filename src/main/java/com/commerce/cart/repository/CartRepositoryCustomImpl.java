@@ -1,4 +1,4 @@
-package com.commerce.cart.repositiry;
+package com.commerce.cart.repository;
 
 import com.commerce.cart.domain.Cart;
 import com.querydsl.jpa.impl.JPAQueryFactory;
