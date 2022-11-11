@@ -4,7 +4,6 @@ import com.commerce.cart.domain.Cart;
 import com.commerce.cart.repository.CartRepository;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
-import com.commerce.order.domain.Order;
 import com.commerce.order.repository.OrderRepository;
 import com.commerce.product.domain.Item;
 import com.commerce.product.repository.ItemRepository;
@@ -21,11 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class OrderServiceImplTest {
