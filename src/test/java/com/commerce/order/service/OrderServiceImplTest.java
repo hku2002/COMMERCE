@@ -1,7 +1,7 @@
 package com.commerce.order.service;
 
 import com.commerce.cart.domain.Cart;
-import com.commerce.cart.repositiry.CartRepository;
+import com.commerce.cart.repository.CartRepository;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
 import com.commerce.order.repository.OrderRepository;
