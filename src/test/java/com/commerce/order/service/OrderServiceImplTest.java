@@ -3,12 +3,14 @@ package com.commerce.order.service;
 import com.commerce.cart.domain.Cart;
 import com.commerce.cart.repository.CartRepository;
 import com.commerce.delivery.repository.DeliveryRepository;
+import com.commerce.global.common.Price;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
 import com.commerce.order.domain.Order;
 import com.commerce.order.repository.OrderItemRepository;
 import com.commerce.order.repository.OrderRepository;
 import com.commerce.product.domain.Item;
+import com.commerce.product.domain.Product;
 import com.commerce.product.repository.ItemRepository;
 import com.commerce.user.domain.Member;
 import com.commerce.user.repository.MemberRepository;
@@ -131,6 +133,60 @@ class OrderServiceImplTest {
         // then
         assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
                 .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 생성 시 주문 테이블 저장 메소드를 한번 호출하였는지 확인")
+    void addOrderCheckOrderSave() {
+        // given
+        List<Item> items = new ArrayList<>();
+        items.add(Item.builder().id(1L).build());
+        List<Cart> carts = new ArrayList<>();
+        carts.add(Cart.builder()
+                .id(1L)
+                .product(Product.builder().id(1L).name("테스트 상품").build())
+                .item(Item.builder().id(1L).price(Price.builder().salePrice(1000).build()).build())
+                .build());
+
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(cartRepository.findCartsByCartIdsAndMemberId(anyList(), any())).willReturn(carts);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(items);
+        given(itemRepository.findById(1L)).willReturn(Optional.of(Item.builder().id(1L).build()));
+
+        // when
+        List<Long> cartIds = List.of(1L);
+        orderServiceImpl.addOrder(cartIds);
+
+        // then
+        verify(orderRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("주문 생성 시 주문 아이템 테이블 저장 메소드를 한번 호출하였는지 확인")
+    void addOrderCheckOrderItemsSave() {
+        // given
+        List<Item> items = new ArrayList<>();
+        items.add(Item.builder().id(1L).build());
+        List<Cart> carts = new ArrayList<>();
+        carts.add(Cart.builder()
+                .id(1L)
+                .product(Product.builder().id(1L).name("테스트 상품").build())
+                .item(Item.builder().id(1L).price(Price.builder().salePrice(1000).build()).build())
+                .build());
+
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(cartRepository.findCartsByCartIdsAndMemberId(anyList(), any())).willReturn(carts);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(items);
+        given(itemRepository.findById(1L)).willReturn(Optional.of(Item.builder().id(1L).build()));
+
+        // when
+        List<Long> cartIds = List.of(1L);
+        orderServiceImpl.addOrder(cartIds);
+
+        // then
+        verify(orderItemRepository, times(1)).saveAll(any());
     }
 
     @Test
