@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,7 +58,7 @@ class MemberServiceImplTest {
         memberServiceImpl.join(joinMemberDto);
 
         // then
-        verify(memberRepository).save(any());
+        verify(memberRepository, times(1)).save(any());
     }
 
 }
