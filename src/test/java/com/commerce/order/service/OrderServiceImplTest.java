@@ -2,6 +2,8 @@ package com.commerce.order.service;
 
 import com.commerce.cart.domain.Cart;
 import com.commerce.cart.repository.CartRepository;
+import com.commerce.delivery.domain.Delivery;
+import com.commerce.delivery.domain.Delivery.DeliveryStatus;
 import com.commerce.delivery.repository.DeliveryRepository;
 import com.commerce.global.common.Price;
 import com.commerce.global.common.exception.BadRequestException;
@@ -26,6 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.commerce.delivery.domain.Delivery.DeliveryStatus.IN_DELIVERY;
+import static com.commerce.delivery.domain.Delivery.DeliveryStatus.STAND_BY;
+import static com.commerce.order.domain.Order.OrderStatus.CANCELED;
 import static com.commerce.order.domain.Order.OrderStatus.COMPLETED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -61,7 +66,7 @@ class OrderServiceImplTest {
 
     @Test
     @DisplayName("주문 생성 시 회원 정보가 없으면 예외로 던진다.")
-    void addOrderEmptyMemberThrow() {
+    void addOrderMemberNotFoundThrow() {
         // given
         given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(null);
         given(jwtTokenManager.getUserIdByToken()).willReturn("test");
@@ -70,13 +75,12 @@ class OrderServiceImplTest {
         List<Long> cartIds = List.of(1L, 2L, 3L);
 
         // then
-        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
-                .isInstanceOf(BadRequestException.class);
+        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds)).isInstanceOf(BadRequestException.class);
     }
 
     @Test
     @DisplayName("주문 생성 시 장바구니 정보가 없으면 예외로 던진다.")
-    void addOrderEmptyCartThrow() {
+    void addOrderCartNotFoundThrow() {
         // given
         given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
         given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
@@ -87,8 +91,7 @@ class OrderServiceImplTest {
         List<Long> cartIds = List.of(1L, 2L, 3L);
 
         // then
-        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
-                .isInstanceOf(BadRequestException.class);
+        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds)).isInstanceOf(BadRequestException.class);
     }
 
     @Test
@@ -106,8 +109,7 @@ class OrderServiceImplTest {
         List<Long> cartIds = List.of(2L);
 
         // then
-        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
-                .isInstanceOf(BadRequestException.class);
+        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds)).isInstanceOf(BadRequestException.class);
     }
 
     @Test
@@ -132,8 +134,7 @@ class OrderServiceImplTest {
         List<Long> cartIds = List.of(1L);
 
         // then
-        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
-                .isInstanceOf(BadRequestException.class);
+        assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds)).isInstanceOf(BadRequestException.class);
     }
 
     @Test
@@ -278,6 +279,107 @@ class OrderServiceImplTest {
         verify(item, atLeastOnce()).compareStockQuantityWithItemQuantity(anyInt());
         verify(item, atLeastOnce()).subtractStock(anyInt());
 
+    }
+
+    @Test
+    @DisplayName("주문 취소 시 주문 데이터가 존재하지 않을 경우 예외를 던진다.")
+    void cancelOrderDataNotFoundThrow() {
+        // given
+        given(orderRepository.findWithDeliveryByOrderId(anyLong())).willReturn(null);
+
+        // when
+        Long orderId = 1L;
+
+        // then
+        assertThatThrownBy(() -> orderServiceImpl.cancelOrder(orderId)).isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 취소 시 이미 주문이 취소된 경우 예외를 던진다.")
+    void cancelOrderAlreadyCanceledThrow() {
+        // given
+        Order order = Order.builder().id(1L).build();
+        order.updateOrderStatus(CANCELED);
+        given(orderRepository.findWithDeliveryByOrderId(anyLong())).willReturn(order);
+
+        // when
+        Long orderId = 1L;
+
+        // then
+        assertThatThrownBy(() -> orderServiceImpl.cancelOrder(orderId)).isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 취소 시 주문 취소가 가능하지 않을 경우 예외를 던진다.")
+    void cancelOrderNotCancelableThrow() {
+        // given
+        Delivery delivery = Delivery.builder().id(1L).status(IN_DELIVERY).build();
+        Order order = Order.builder().id(1L).delivery(delivery).build();
+        order.updateOrderStatus(COMPLETED);
+        given(orderRepository.findWithDeliveryByOrderId(anyLong())).willReturn(order);
+
+        // when
+        Long orderId = 1L;
+
+        // then
+        assertThatThrownBy(() -> orderServiceImpl.cancelOrder(orderId)).isInstanceOf(BadRequestException.class)
+                .hasMessage("배송이 준비중인 상품만 주문 취소가 가능합니다.");
+    }
+
+    @Test
+    @DisplayName("주문 취소 시 주문상태변경 메소드를 한번 호출하였는지 확인")
+    void cancelOrderUpdateOrderStatusMethodCallOnceCheck() {
+        // given
+        Delivery delivery = Delivery.builder().id(1L).status(STAND_BY).build();
+        Order order = spy(Order.builder().id(1L).delivery(delivery).build());
+        order.updateOrderStatus(COMPLETED);
+        given(orderRepository.findWithDeliveryByOrderId(anyLong())).willReturn(order);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(List.of(Item.builder().build()));
+
+        // when
+        orderServiceImpl.cancelOrder(1L);
+
+        // then
+        verify(order, times(1)).updateOrderStatus(CANCELED);
+    }
+
+    @Test
+    @DisplayName("주문 취소 시 배송상태변경 메소드를 한번 호출하였는지 확인")
+    void cancelOrderUpdateDeliveryStatusMethodCallOnceCheck() {
+        // given
+        Delivery delivery = spy(Delivery.builder().id(1L).status(STAND_BY).build());
+        Order order = spy(Order.builder().id(1L).delivery(delivery).build());
+        order.updateOrderStatus(COMPLETED);
+        given(orderRepository.findWithDeliveryByOrderId(anyLong())).willReturn(order);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(List.of(Item.builder().build()));
+
+        // when
+        orderServiceImpl.cancelOrder(1L);
+
+        // then
+        verify(delivery, times(1)).updateDeliveryStatus(DeliveryStatus.CANCELED);
+    }
+
+    @Test
+    @DisplayName("주문 취소 시 주문상품의 재고를 복구하는 메소드를 한번 이상 호출하였는지 확인")
+    void cancelOrderAddStockMethodCallsCheck() {
+        // given
+        Delivery delivery = Delivery.builder().id(1L).status(STAND_BY).build();
+        Order order = Order.builder().id(1L).delivery(delivery).build();
+        order.updateOrderStatus(COMPLETED);
+        List<OrderItem> orderItems = new ArrayList<>();
+        orderItems.add(OrderItem.builder().id(1L).itemId(1L).itemUsedQuantity(5).build());
+        Item item = spy(Item.builder().id(1L).stockQuantity(10).build());
+        given(orderRepository.findWithDeliveryByOrderId(anyLong())).willReturn(order);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(List.of(Item.builder().build()));
+        given(orderItemRepository.findAllByOrderIdAndActivated(anyLong(), anyBoolean())).willReturn(orderItems);
+        given(itemRepository.findById(1L)).willReturn(Optional.of(item));
+
+        // when
+        orderServiceImpl.cancelOrder(1L);
+
+        // then
+        verify(item, atLeastOnce()).addStock(anyInt());
     }
 
 }
