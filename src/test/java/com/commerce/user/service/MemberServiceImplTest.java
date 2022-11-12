@@ -1,103 +1,63 @@
 package com.commerce.user.service;
 
-import com.commerce.global.common.Address;
 import com.commerce.global.common.exception.BadRequestException;
+import com.commerce.user.domain.Member;
 import com.commerce.user.dto.JoinMemberDto;
 import com.commerce.user.repository.MemberRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Description;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
-@SpringBootTest
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class MemberServiceImplTest {
 
-    @Autowired MemberServiceImpl memberService;
-    @Autowired MemberRepository memberRepository;
+    @Mock
+    MemberRepository memberRepository;
 
-    private static final String USER_ID = "testId";
+    @InjectMocks
+    MemberServiceImpl memberServiceImpl;
+
+    private static final String USER_SAME_ID = "testId";
+    private static final String USER_ID = "testId2";
 
     @Test
-    @Description("회원가입")
-    public void joinTest() {
+    @Description("회원가입 시 중복회원이 존재할 경우 예외를 던진다.")
+    void joinDuplicateMemberExistThrow() {
         // given
-        Address address = Address.builder()
-                .address("서울시 강남구 테헤란로 427")
-                .addressDetail("아이파크몰 test 호")
-                .zipCode("12345")
-                .build();
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean()))
+                .willReturn(Member.builder().id(1L).userId(USER_SAME_ID).build());
+
+        // when
+        JoinMemberDto joinMemberDto = new JoinMemberDto();
+        joinMemberDto.setUserId(USER_SAME_ID);
+
+        // then
+        assertThatThrownBy(() -> memberServiceImpl.join(joinMemberDto)).isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @Description("회원가입 시 save 함수를 한번 호출한다.")
+    void joinCheckSaveMethodCall() {
+        // given
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(null);
+        given(memberRepository.save(any(Member.class))).willReturn(Member.builder().id(1L).userId(USER_ID).build());
+
+        // when
         JoinMemberDto joinMemberDto = new JoinMemberDto();
         joinMemberDto.setUserId(USER_ID);
-        joinMemberDto.setPassword("1234");
-        joinMemberDto.setUsername("홍길동");
-        joinMemberDto.setEmail("test01@test.com");
-        joinMemberDto.setPhoneNumber("01012345678");
-        joinMemberDto.setAddress(address);
-
-        // when
-        memberService.join(joinMemberDto);
+        joinMemberDto.encryptPassword("testPassword");
+        memberServiceImpl.join(joinMemberDto);
 
         // then
-        assertThat(memberRepository.findByUserIdAndActivated(USER_ID, true).getUserId(), is(USER_ID));
+        verify(memberRepository).save(any());
     }
 
-    @Test
-    @Description("중복 회원 검사")
-    public void validateDuplicateMemberTest() {
-        // given
-        Address address = Address.builder()
-                .address("서울시 강남구 테헤란로 427")
-                .addressDetail("아이파크몰 test 호")
-                .zipCode("12345")
-                .build();
-        JoinMemberDto joinMemberDto = new JoinMemberDto();
-        joinMemberDto.setUserId("testId");
-        joinMemberDto.setPassword("1234");
-        joinMemberDto.setUsername("홍길동");
-        joinMemberDto.setEmail("test01@test.com");
-        joinMemberDto.setPhoneNumber("01012345678");
-        joinMemberDto.setAddress(address);
-
-        // when
-        memberRepository.save(joinMemberDto.toEntity());
-
-        // then
-        Assertions.assertThrows(BadRequestException.class, () -> {
-            memberService.join(joinMemberDto);
-        });
-    }
-
-    @Test
-    @Description("회원이 없을 경우")
-    public void userEmptyTest() {
-        // given
-        Address address = Address.builder()
-                .address("서울시 강남구 테헤란로 427")
-                .addressDetail("아이파크몰 test 호")
-                .zipCode("12345")
-                .build();
-        JoinMemberDto joinMemberDto = new JoinMemberDto();
-        joinMemberDto.setUserId("testId");
-        joinMemberDto.setPassword("1234");
-        joinMemberDto.setUsername("홍길동");
-        joinMemberDto.setEmail("test01@test.com");
-        joinMemberDto.setPhoneNumber("01012345678");
-        joinMemberDto.setAddress(address);
-
-        // when
-        memberRepository.save(joinMemberDto.toEntity());
-
-        // then
-        assertThrows(BadRequestException.class, () -> memberService.findOne("emptyId"));
-        Assertions.assertThrows(BadRequestException.class, () -> {
-            memberService.findOne("emptyId");
-        });
-    }
 }
