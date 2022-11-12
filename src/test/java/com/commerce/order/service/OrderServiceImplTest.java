@@ -2,9 +2,11 @@ package com.commerce.order.service;
 
 import com.commerce.cart.domain.Cart;
 import com.commerce.cart.repository.CartRepository;
+import com.commerce.delivery.repository.DeliveryRepository;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
 import com.commerce.order.domain.Order;
+import com.commerce.order.repository.OrderItemRepository;
 import com.commerce.order.repository.OrderRepository;
 import com.commerce.product.domain.Item;
 import com.commerce.product.repository.ItemRepository;
@@ -21,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static com.commerce.order.domain.Order.OrderStatus.COMPLETED;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
@@ -34,13 +36,19 @@ class OrderServiceImplTest {
     private OrderRepository orderRepository;
 
     @Mock
+    private OrderItemRepository orderItemRepository;
+
+    @Mock
+    private ItemRepository itemRepository;
+
+    @Mock
     private MemberRepository memberRepository;
 
     @Mock
     private CartRepository cartRepository;
 
     @Mock
-    private ItemRepository itemRepository;
+    private DeliveryRepository deliveryRepository;
 
     @Mock
     private JwtTokenManager jwtTokenManager;
@@ -150,6 +158,41 @@ class OrderServiceImplTest {
         // then
         assertThatThrownBy(() -> orderServiceImpl.addOrder(cartIds))
                 .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 완료 시 이미 주문이 완료된 경우 예외를 던진다.")
+    void completeOrderAlreadyCompleteThrow() {
+        // given
+        Order order = Order.builder().id(1L).build();
+        order.updateOrderStatus(COMPLETED);
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(orderRepository.findByIdAndActivated(anyLong(), anyBoolean())).willReturn(order);
+
+        // when
+        Long orderId = 1L;
+
+        // then
+        assertThatThrownBy(() -> orderServiceImpl.completeOrder(orderId))
+                .isInstanceOf(BadRequestException.class);
+    }
+
+    @Test
+    @DisplayName("주문 완료 시 주문 완료 처리 메소드를 한번 호출하였는지 확인")
+    void completeOrderUpdateOrderStatusMethodCallOnceCheck() {
+        // given
+        Order order = mock(Order.class);
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(orderRepository.findByIdAndActivated(anyLong(), anyBoolean())).willReturn(order);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(List.of(Item.builder().build()));
+
+        // when
+        orderServiceImpl.completeOrder(1L);
+
+        // then
+        verify(order, times(1)).updateOrderStatus(COMPLETED);
     }
 
 }
