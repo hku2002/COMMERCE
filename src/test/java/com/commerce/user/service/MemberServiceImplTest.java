@@ -4,12 +4,12 @@ import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.domain.Member;
 import com.commerce.user.dto.JoinMemberDto;
 import com.commerce.user.repository.MemberRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.annotation.Description;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.*;
@@ -29,7 +29,7 @@ class MemberServiceImplTest {
     private static final String USER_ID = "testId2";
 
     @Test
-    @Description("회원가입 시 중복회원이 존재할 경우 예외를 던진다.")
+    @DisplayName("회원가입 시 중복회원이 존재할 경우 예외를 던진다.")
     void joinDuplicateMemberExistThrow() {
         // given
         given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean()))
@@ -44,7 +44,7 @@ class MemberServiceImplTest {
     }
 
     @Test
-    @Description("회원가입 시 save 함수를 한번 호출한다.")
+    @DisplayName("회원가입 시 save 함수를 한번 호출한다.")
     void joinCheckSaveMethodCall() {
         // given
         given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(null);
