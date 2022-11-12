@@ -7,6 +7,7 @@ import com.commerce.global.common.Price;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.global.common.token.JwtTokenManager;
 import com.commerce.order.domain.Order;
+import com.commerce.order.domain.OrderItem;
 import com.commerce.order.repository.OrderItemRepository;
 import com.commerce.order.repository.OrderRepository;
 import com.commerce.product.domain.Item;
@@ -249,6 +250,34 @@ class OrderServiceImplTest {
 
         // then
         verify(order, times(1)).updateOrderStatus(COMPLETED);
+    }
+
+    @Test
+    @DisplayName("주문 완료 시 남은재고 수량비교, 재고차감 메소드를 한번 이상 호출한다.")
+    void completeOrderCheckStockQuantityAndSubtractStockCalls() {
+        // given
+        Order order = Order.builder().build();
+        Item item = mock(Item.class);
+        List<Item> items = new ArrayList<>();
+        items.add(Item.builder().id(1L).stockQuantity(10).build());
+
+        List<OrderItem> orderItems = new ArrayList<>();
+        orderItems.add(OrderItem.builder().id(1L).itemId(1L).itemUsedQuantity(5).build());
+
+        given(memberRepository.findByUserIdAndActivated(anyString(), anyBoolean())).willReturn(Member.builder().build());
+        given(jwtTokenManager.getUserIdByToken()).willReturn("testId");
+        given(orderRepository.findByIdAndActivated(anyLong(), anyBoolean())).willReturn(order);
+        given(orderItemRepository.findAllByOrderIdAndActivated(anyLong(), anyBoolean())).willReturn(orderItems);
+        given(itemRepository.findAllByIdInAndActivated(anyList(), anyBoolean())).willReturn(items);
+        given(itemRepository.findById(1L)).willReturn(Optional.ofNullable(item));
+
+        // when
+        orderServiceImpl.completeOrder(1L);
+
+        // then
+        verify(item, atLeastOnce()).compareStockQuantityWithItemQuantity(anyInt());
+        verify(item, atLeastOnce()).subtractStock(anyInt());
+
     }
 
 }
