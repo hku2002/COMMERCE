@@ -2,7 +2,7 @@ package com.commerce.user.service;
 
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.domain.Member;
-import com.commerce.user.repository.MemberRepository;
+import com.commerce.user.domain.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;

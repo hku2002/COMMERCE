@@ -1,4 +1,4 @@
-package com.commerce.product.repository;
+package com.commerce.product.domain;
 
 import com.commerce.product.domain.Item;
 import org.springframework.data.jpa.repository.JpaRepository;

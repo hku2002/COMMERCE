@@ -1,7 +1,7 @@
 package com.commerce.product.service;
 
 import com.commerce.product.domain.Item;
-import com.commerce.product.repository.ItemRepository;
+import com.commerce.product.domain.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

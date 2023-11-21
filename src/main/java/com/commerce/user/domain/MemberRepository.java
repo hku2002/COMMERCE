@@ -1,4 +1,4 @@
-package com.commerce.user.repository;
+package com.commerce.user.domain;
 
 import com.commerce.user.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;

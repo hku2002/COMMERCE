@@ -4,7 +4,7 @@ import com.commerce.global.common.token.JwtTokenManager;
 import com.commerce.user.domain.RefreshToken;
 import com.commerce.user.dto.LoginDto;
 import com.commerce.user.dto.LoginResponseDto;
-import com.commerce.user.repository.RefreshTokenRepository;
+import com.commerce.user.domain.RefreshTokenRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

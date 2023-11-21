@@ -1,7 +1,7 @@
 package com.commerce.product.service;
 
 import com.commerce.global.common.exception.BadRequestException;
-import com.commerce.product.repository.ProductRepository;
+import com.commerce.product.domain.ProductRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

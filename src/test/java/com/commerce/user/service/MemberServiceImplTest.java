@@ -3,7 +3,7 @@ package com.commerce.user.service;
 import com.commerce.global.common.exception.BadRequestException;
 import com.commerce.user.domain.Member;
 import com.commerce.user.dto.JoinMemberDto;
-import com.commerce.user.repository.MemberRepository;
+import com.commerce.user.domain.MemberRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
